@@ -15,6 +15,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600;800&display=swap');
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: linear-gradient(45deg, #1a1a2e, #4b0082, #1e3a8a, #831843);
             background-size: 400%;
@@ -30,6 +36,193 @@
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.85);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .navbar-logo-img {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
+        }
+
+        .navbar-brand {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .navbar-link {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .navbar-link:hover {
+            color: #ec4899;
+            text-shadow: 0 0 8px rgba(236, 72, 153, 0.6);
+        }
+
+        .navbar-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #ec4899);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-link:hover::after {
+            width: 100%;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            min-width: 220px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-link {
+            display: block;
+            padding: 0.75rem 1.25rem;
+            color: #e5e7eb;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-link:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-link:hover {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), rgba(236, 72, 153, 0.2));
+            color: #ec4899;
+            padding-left: 1.5rem;
+        }
+
+        .navbar-cta {
+            background: linear-gradient(90deg, #3b82f6, #ec4899);
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .navbar-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.5);
+        }
+
+        .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 72px;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .mobile-menu-link {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.25rem;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-menu-link:hover {
+            color: #ec4899;
         }
 
         /* Custom Cursor */
@@ -71,6 +264,7 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+            padding-top: 80px;
         }
 
         .hero-bg {
@@ -121,13 +315,32 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 1rem;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
             overflow: hidden;
+            position: relative;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(236, 72, 153, 0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
         }
 
         .project-card:hover {
             transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 12px 24px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.5), 0 0 40px rgba(59, 130, 246, 0.3);
+            border-color: rgba(236, 72, 153, 0.5);
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
         }
 
         .project-image {
@@ -277,10 +490,29 @@
             100% { background-position: 200% center; }
         }
 
+        @media (max-width: 768px) {
+            .navbar-menu {
+                display: none;
+            }
+            .mobile-menu-button {
+                display: block;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+            .navbar-logo-img {
+                width: 32px;
+                height: 32px;
+            }
+        }
+
         @media (max-width: 640px) {
             .hero {
                 text-align: center;
-                padding: 2rem;
+                padding: 6rem 2rem 2rem;
             }
             .hero-title {
                 font-size: 2.5rem;
@@ -342,6 +574,8 @@
         const App = () => {
             const [isModalOpen, setIsModalOpen] = useState(false);
             const [copyStatus, setCopyStatus] = useState('Copy Address');
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+            const [isScrolled, setIsScrolled] = useState(false);
 
             const cryptoAddress = '0x71074075bA6FFE0BF39aCb6EDEF09b3b6be3AB6f'; // Replace with your actual crypto address
 
@@ -352,6 +586,20 @@
                 }).catch(() => {
                     setCopyStatus('Failed to copy');
                 });
+            };
+
+            // Navbar scroll effect
+            useEffect(() => {
+                const handleScroll = () => {
+                    setIsScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            // Close mobile menu on link click
+            const handleLinkClick = () => {
+                setIsMobileMenuOpen(false);
             };
 
             // Custom Cursor Logic
@@ -505,6 +753,64 @@
 
             return (
                 <div>
+                    {/* Navigation Bar */}
+                    <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
+                        <div className="navbar-container">
+                            <a href="#" className="navbar-logo">
+                                <img src="./assets/NSlogo.png" alt="Logo" className="navbar-logo-img" />
+                                <span className="navbar-brand">NifftySwiggle</span>
+                            </a>
+                            <ul className="navbar-menu">
+                                <li><a href="#" className="navbar-link">Home</a></li>
+                                <li className="dropdown">
+                                    <a href="#projects" className="navbar-link">Projects ▾</a>
+                                    <div className="dropdown-content">
+                                        <a href="/tempohub" className="dropdown-link">Tempo Hub</a>
+                                        <a href="https://strategicplay.xyz" className="dropdown-link" target="_blank" rel="noopener noreferrer">Strategic Play</a>
+                                        <a href="https://allstake.io/launches/pitbits" className="dropdown-link" target="_blank" rel="noopener noreferrer">PitBits</a>
+                                        <a href="https://www.gaiaecosystem.com/" className="dropdown-link" target="_blank" rel="noopener noreferrer">Gaia Ecosystem</a>
+                                        <a href="/cdcswigglescan" className="dropdown-link">CDC Swiggle Scan</a>
+                                        <a href="/swigglescan" className="dropdown-link">Swiggle Scan</a>
+                                        <a href="/nftgenerator" className="dropdown-link">NFT Generator</a>
+                                        <a href="https://www.gaiaecosystem.com/stake.html" className="dropdown-link" target="_blank" rel="noopener noreferrer">Non-Custodial Stake</a>
+                                        <a href="/chess" className="dropdown-link">Online Chess</a>
+                                        <a href="/airdrop" className="dropdown-link">Token Airdrop</a>
+                                        <a href="/gamehub" className="dropdown-link">Game Hub</a>
+                                        <a href="/pixeldraw" className="dropdown-link">Pixel Draw</a>
+                                        <a href="/updatemetadata" className="dropdown-link">Update Metadata</a>
+                                    </div>
+                                </li>
+                                <li><a href="#about" className="navbar-link">About</a></li>
+                                <li><a href="#contact" className="navbar-link">Contact</a></li>
+                                <li><a href="https://discord.gg/CaSgfqdYCW" className="navbar-cta" target="_blank" rel="noopener noreferrer">Join Discord</a></li>
+                            </ul>
+                            <button 
+                                className="mobile-menu-button" 
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                aria-label="Toggle menu"
+                            >
+                                {isMobileMenuOpen ? '✕' : '☰'}
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Mobile Menu */}
+                    <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
+                        <ul className="mobile-menu-list">
+                            <li><a href="#" className="mobile-menu-link" onClick={handleLinkClick}>Home</a></li>
+                            <li><a href="#projects" className="mobile-menu-link" onClick={handleLinkClick}>Projects Overview</a></li>
+                            <li style={{paddingLeft: '1rem', fontSize: '0.9rem', color: '#9ca3af', marginTop: '0.5rem'}}>Quick Links:</li>
+                            <li><a href="/tempohub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Tempo Hub</a></li>
+                            <li><a href="https://strategicplay.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Strategic Play</a></li>
+                            <li><a href="/nftgenerator" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>NFT Generator</a></li>
+                            <li><a href="/chess" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Online Chess</a></li>
+                            <li><a href="/gamehub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Game Hub</a></li>
+                            <li><a href="#about" className="mobile-menu-link" onClick={handleLinkClick}>About</a></li>
+                            <li><a href="#contact" className="mobile-menu-link" onClick={handleLinkClick}>Contact</a></li>
+                            <li><a href="https://discord.gg/CaSgfqdYCW" className="navbar-cta" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>Join Discord</a></li>
+                        </ul>
+                    </div>
+
                     {/* Hero Section */}
                     <section className="hero">
                         <div className="hero-bg"></div>
@@ -570,6 +876,24 @@
                             Creations
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                             {/* Tempo Hub */}
+                            <div className="project-card p-6">
+                                <img
+                                    src="./assets/TempoHub.png"
+                                    alt="Tempo Hub"
+                                    className="project-image mb-4"
+                                />
+                                <h3 className="text-xl font-semibold text-white mb-2">Tempo Hub</h3>
+                                <p className="text-gray-400 mb-4">
+                                    Music production hub with BPM calculator, metronome, and rhythm tools
+                                </p>
+                                <a
+                                    href="/tempohub"
+                                    className="cta-button inline-block"
+                                >
+                                    Launch
+                                </a>
+                            </div>
                              {/* Strategic Play */}
                             <div className="project-card p-6">
                                 <img
@@ -789,22 +1113,22 @@
                                     Update
                                 </a>
                             </div>
-                            {/* MPC */}
+                            {/* Tempo Hub */}
                             <div className="project-card p-6">
                                 <img
-                                    src="./assets/MPC.png"
-                                    alt="MPC"
+                                    src="./assets/TempoHub.png"
+                                    alt="Tempo Hub"
                                     className="project-image mb-4"
                                 />
-                                <h3 className="text-xl font-semibold text-white mb-2">MPC</h3>
+                                <h3 className="text-xl font-semibold text-white mb-2">Tempo Hub</h3>
                                 <p className="text-gray-400 mb-4">
-                                    Simple MPC with beatpad, sequencer, effects, and more
+                                    Music production hub with BPM calculator, metronome, and rhythm tools
                                 </p>
                                 <a
-                                    href="/mpc"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
+                                    href="/tempohub"
+                                    className="cta-button inline-block"
                                 >
-                                    Create
+                                    Launch
                                 </a>
                             </div>
                             {/* Soon */}
