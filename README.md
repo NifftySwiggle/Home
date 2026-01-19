@@ -8,3 +8,4 @@ a growing suite of modular, creator-focused utilities designed to empower develo
 🐦 [Follow on X](https://x.com/pet_rescueNFT)
 
 ---
+© 2025 NifftySwiggle Studio. All rights reserved.
