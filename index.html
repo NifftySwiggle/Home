@@ -147,6 +147,34 @@
             display: block;
         }
 
+        .dropdown.active .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-arrow {
+            display: inline-block;
+            margin-left: 0.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .mobile-dropdown {
+            display: none;
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .mobile-dropdown.active {
+            display: block;
+        }
+
+        .mobile-dropdown-item {
+            padding: 0.5rem 0;
+        }
+
         .dropdown-link {
             display: block;
             padding: 0.75rem 1.25rem;
@@ -575,7 +603,9 @@
             const [isModalOpen, setIsModalOpen] = useState(false);
             const [copyStatus, setCopyStatus] = useState('Copy Address');
             const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+            const [isMobileProjectsOpen, setIsMobileProjectsOpen] = useState(false);
             const [isScrolled, setIsScrolled] = useState(false);
+            const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
 
             const cryptoAddress = '0x71074075bA6FFE0BF39aCb6EDEF09b3b6be3AB6f'; // Replace with your actual crypto address
 
@@ -600,7 +630,15 @@
             // Close mobile menu on link click
             const handleLinkClick = () => {
                 setIsMobileMenuOpen(false);
+                setIsMobileProjectsOpen(false);
             };
+
+            // Close dropdowns when mobile menu closes
+            useEffect(() => {
+                if (!isMobileMenuOpen) {
+                    setIsMobileProjectsOpen(false);
+                }
+            }, [isMobileMenuOpen]);
 
             // Custom Cursor Logic
             useEffect(() => {
@@ -762,8 +800,15 @@
                             </a>
                             <ul className="navbar-menu">
                                 <li><a href="#" className="navbar-link">Home</a></li>
-                                <li className="dropdown">
-                                    <a href="#projects" className="navbar-link">Projects ▾</a>
+                                <li 
+                                    className={`dropdown ${isDesktopDropdownOpen ? 'active' : ''}`}
+                                    onMouseEnter={() => setIsDesktopDropdownOpen(true)}
+                                    onMouseLeave={() => setIsDesktopDropdownOpen(false)}
+                                    onClick={() => setIsDesktopDropdownOpen(!isDesktopDropdownOpen)}
+                                >
+                                    <a href="#projects" className="navbar-link" onClick={(e) => e.preventDefault()}>
+                                        Projects <span className="dropdown-arrow">▾</span>
+                                    </a>
                                     <div className="dropdown-content">
                                         <a href="/tempohub" className="dropdown-link">Tempo Hub</a>
                                         <a href="https://strategicplay.xyz" className="dropdown-link" target="_blank" rel="noopener noreferrer">Strategic Play</a>
@@ -798,13 +843,59 @@
                     <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
                         <ul className="mobile-menu-list">
                             <li><a href="#" className="mobile-menu-link" onClick={handleLinkClick}>Home</a></li>
-                            <li><a href="#projects" className="mobile-menu-link" onClick={handleLinkClick}>Projects Overview</a></li>
-                            <li style={{paddingLeft: '1rem', fontSize: '0.9rem', color: '#9ca3af', marginTop: '0.5rem'}}>Quick Links:</li>
-                            <li><a href="/tempohub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Tempo Hub</a></li>
-                            <li><a href="https://strategicplay.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Strategic Play</a></li>
-                            <li><a href="/nftgenerator" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>NFT Generator</a></li>
-                            <li><a href="/chess" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Online Chess</a></li>
-                            <li><a href="/gamehub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Game Hub</a></li>
+                            <li>
+                                <a 
+                                    href="#projects" 
+                                    className="mobile-menu-link" 
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setIsMobileProjectsOpen(!isMobileProjectsOpen);
+                                    }}
+                                >
+                                    Projects {isMobileProjectsOpen ? '▴' : '▾'}
+                                </a>
+                                <div className={`mobile-dropdown ${isMobileProjectsOpen ? 'active' : ''}`}>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/tempohub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Tempo Hub</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="https://strategicplay.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Strategic Play</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="https://allstake.io/launches/pitbits" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>PitBits</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="https://www.gaiaecosystem.com/" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Gaia Ecosystem</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/cdcswigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>CDC Swiggle Scan</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/swigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Swiggle Scan</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/nftgenerator" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>NFT Generator</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="https://www.gaiaecosystem.com/stake.html" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Non-Custodial Stake</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/chess" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Online Chess</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/airdrop" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Token Airdrop</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/gamehub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Game Hub</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/pixeldraw" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Pixel Draw</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/updatemetadata" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Update Metadata</a>
+                                    </div>
+                                </div>
+                            </li>
                             <li><a href="#about" className="mobile-menu-link" onClick={handleLinkClick}>About</a></li>
                             <li><a href="#contact" className="mobile-menu-link" onClick={handleLinkClick}>Contact</a></li>
                             <li><a href="https://discord.gg/CaSgfqdYCW" className="navbar-cta" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>Join Discord</a></li>
