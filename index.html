@@ -592,6 +592,39 @@
             100% { background-position: 200% center; }
         }
 
+        /* Custom Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #3b82f6, #ec4899);
+            border-radius: 10px;
+            border: 2px solid rgba(26, 26, 46, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #60a5fa, #f472b6);
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: rgba(26, 26, 46, 0.8);
+        }
+
+        /* Firefox Scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #ec4899 rgba(26, 26, 46, 0.8);
+        }
+
         @media (max-width: 1024px) {
             .navbar-menu {
                 display: none;
@@ -791,6 +824,9 @@
             useEffect(() => {
                 gsap.registerPlugin(ScrollTrigger);
 
+                // Refresh ScrollTrigger to recalculate positions
+                ScrollTrigger.refresh();
+
                 // Hero text and logo animation
                 gsap.from(".hero-content", {
                     opacity: 0,
@@ -808,73 +844,141 @@
                     delay: 0.5
                 });
 
+                // Clear any existing ScrollTriggers for project cards
+                ScrollTrigger.getAll().forEach(trigger => {
+                    if (trigger.vars.trigger && trigger.vars.trigger.classList && trigger.vars.trigger.classList.contains('project-card')) {
+                        trigger.kill();
+                    }
+                });
+
                 // Project cards animation with stagger
                 gsap.utils.toArray(".project-card").forEach((card, i) => {
-                    gsap.from(card, {
-                        opacity: 0,
-                        y: 120,
-                        duration: 1.2,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 85%",
-                            toggleActions: "play none none none"
+                    gsap.fromTo(card, 
+                        {
+                            opacity: 0,
+                            y: 100,
+                            scale: 0.9
                         },
-                        delay: i * 0.2
-                    });
+                        {
+                            opacity: 1,
+                            y: 0,
+                            scale: 1,
+                            duration: 1,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 90%",
+                                end: "top 20%",
+                                toggleActions: "play none none none",
+                                once: false
+                            },
+                            delay: (i % 4) * 0.15
+                        }
+                    );
                 });
 
                 // About section animation
-                gsap.from(".about-section", {
-                    opacity: 0,
-                    x: -120,
-                    duration: 1.2,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: ".about-section",
-                        start: "top 80%",
-                        toggleActions: "play none none none"
+                gsap.fromTo(".about-section", 
+                    {
+                        opacity: 0,
+                        x: -100
+                    },
+                    {
+                        opacity: 1,
+                        x: 0,
+                        duration: 1.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: ".about-section",
+                            start: "top 85%",
+                            toggleActions: "play none none none",
+                            once: false
+                        }
                     }
-                });
+                );
 
                 // Contact section animation
-                gsap.from(".contact-section", {
-                    opacity: 0,
-                    x: 120,
-                    duration: 1.2,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: ".contact-section",
-                        start: "top 80%",
-                        toggleActions: "play none none none"
+                gsap.fromTo(".contact-section", 
+                    {
+                        opacity: 0,
+                        y: 80
+                    },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: ".contact-section",
+                            start: "top 85%",
+                            toggleActions: "play none none none",
+                            once: false
+                        }
                     }
-                });
+                );
 
                 // Support section animation
-                gsap.from(".support-section", {
-                    opacity: 0,
-                    x: 120,
-                    duration: 1.2,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: ".support-section",
-                        start: "top 80%",
-                        toggleActions: "play none none none"
+                gsap.fromTo(".support-section", 
+                    {
+                        opacity: 0,
+                        scale: 0.95
+                    },
+                    {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 1,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: ".support-section",
+                            start: "top 85%",
+                            toggleActions: "play none none none",
+                            once: false
+                        }
                     }
-                });
+                );
 
                 // Footer animation
-                gsap.from(".footer", {
-                    opacity: 0,
-                    y: 50,
-                    duration: 1,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: ".footer",
-                        start: "top 90%",
-                        toggleActions: "play none none none"
+                gsap.fromTo(".footer", 
+                    {
+                        opacity: 0,
+                        y: 50
+                    },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: "power2.out",
+                        scrollTrigger: {
+                            trigger: ".footer",
+                            start: "top 95%",
+                            toggleActions: "play none none none",
+                            once: false
+                        }
                     }
-                });
+                );
+
+                // Nomads section animation
+                const nomadsSection = document.querySelector('.section:has(img[alt="Nomads Logo"])');
+                if (nomadsSection) {
+                    gsap.fromTo(nomadsSection, 
+                        {
+                            opacity: 0,
+                            y: 80
+                        },
+                        {
+                            opacity: 1,
+                            y: 0,
+                            duration: 1.2,
+                            ease: "power3.out",
+                            scrollTrigger: {
+                                trigger: nomadsSection,
+                                start: "top 85%",
+                                toggleActions: "play none none none",
+                                once: false
+                            }
+                        }
+                    );
+                }
 
                 // Modal animation
                 if (isModalOpen) {
@@ -885,6 +989,11 @@
                         ease: "back.out(1.7)"
                     });
                 }
+
+                // Cleanup function
+                return () => {
+                    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                };
             }, [isModalOpen]);
 
             return (
@@ -1094,7 +1203,7 @@
                                 />
                                 <h3 className="text-xl font-semibold text-white mb-2">Tempo Hub</h3>
                                 <p className="text-gray-400 mb-4">
-                                    Comprehensive hub for Tempo Network featuring developer tools, ready-to-use templates.
+                                    Comprehensive hub for Tempo Network featuring developer tools and more.
                                 </p>
                                 <a
                                     href="/tempohub"
@@ -1329,7 +1438,7 @@
                                     alt="MPC"
                                     className="project-image mb-4"
                                 />
-                                <h3 className="text-xl font-semibold text-white mb-2">Tempo Hub</h3>
+                                <h3 className="text-xl font-semibold text-white mb-2">MPC</h3>
                                 <p className="text-gray-400 mb-4">
                                     Music production hub with BPM calculator, metronome, and rhythm tools
                                 </p>
