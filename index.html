@@ -21,6 +21,11 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         body {
             background: linear-gradient(45deg, #1a1a2e, #4b0082, #1e3a8a, #831843);
             background-size: 400%;
@@ -30,6 +35,8 @@
             overflow-x: hidden;
             scroll-behavior: smooth;
             cursor: none; /* Hide default cursor */
+            width: 100%;
+            max-width: 100vw;
         }
 
         @keyframes gradientShift {
@@ -44,12 +51,15 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 100;
+            z-index: 1000;
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding: 1rem 2rem;
             transition: all 0.3s ease;
+            width: 100%;
+            max-width: 100vw;
+            overflow: visible;
         }
 
         .navbar.scrolled {
@@ -63,6 +73,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
+            padding: 0;
+            position: relative;
         }
 
         .navbar-logo {
@@ -126,6 +139,14 @@
             position: relative;
         }
 
+        .navbar-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+            position: static;
+        }
+
         .dropdown-content {
             display: none;
             position: absolute;
@@ -136,11 +157,29 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 0.5rem;
             min-width: 220px;
-            max-height: 400px;
+            max-height: 70vh;
             overflow-y: auto;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            z-index: 2000;
             margin-top: 0.5rem;
+        }
+
+        .dropdown-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .dropdown-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .dropdown-content::-webkit-scrollbar-thumb {
+            background: rgba(236, 72, 153, 0.5);
+            border-radius: 4px;
+        }
+
+        .dropdown-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(236, 72, 153, 0.7);
         }
 
         .dropdown:hover .dropdown-content {
@@ -173,6 +212,15 @@
 
         .mobile-dropdown-item {
             padding: 0.5rem 0;
+        }
+
+        .mobile-dropdown-item a {
+            display: block;
+            padding: 0.75rem;
+            margin: 0.25rem 0;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(236, 72, 153, 0.3);
+            touch-action: manipulation;
         }
 
         .dropdown-link {
@@ -214,8 +262,19 @@
             background: none;
             border: none;
             color: white;
-            font-size: 1.5rem;
+            font-size: 2rem;
             cursor: pointer;
+            padding: 0.5rem;
+            line-height: 1;
+            -webkit-tap-highlight-color: rgba(236, 72, 153, 0.3);
+            touch-action: manipulation;
+            position: relative;
+            z-index: 101;
+        }
+
+        .mobile-menu-button:active {
+            color: #ec4899;
+            transform: scale(0.95);
         }
 
         .mobile-menu {
@@ -228,6 +287,9 @@
             backdrop-filter: blur(12px);
             padding: 2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 999;
+            max-height: calc(100vh - 72px);
+            overflow-y: auto;
         }
 
         .mobile-menu.active {
@@ -247,9 +309,15 @@
             font-weight: 500;
             font-size: 1.25rem;
             transition: color 0.3s ease;
+            display: block;
+            padding: 0.5rem 0;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(236, 72, 153, 0.3);
+            touch-action: manipulation;
         }
 
-        .mobile-menu-link:hover {
+        .mobile-menu-link:hover,
+        .mobile-menu-link:active {
             color: #ec4899;
         }
 
@@ -293,6 +361,8 @@
             position: relative;
             overflow: hidden;
             padding-top: 80px;
+            width: 100%;
+            max-width: 100vw;
         }
 
         .hero-bg {
@@ -336,6 +406,9 @@
         .section {
             padding: 4rem 1rem;
             position: relative;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
         }
 
         .project-card {
@@ -346,6 +419,7 @@
             transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
             overflow: hidden;
             position: relative;
+            width: 100%;
         }
 
         .project-card::before {
@@ -518,13 +592,16 @@
             100% { background-position: 200% center; }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .navbar-menu {
                 display: none;
             }
             .mobile-menu-button {
                 display: block;
             }
+        }
+
+        @media (max-width: 768px) {
             .navbar {
                 padding: 1rem;
             }
@@ -535,18 +612,25 @@
                 width: 32px;
                 height: 32px;
             }
+            .hero {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            .section {
+                padding: 2rem 0.75rem;
+            }
         }
 
         @media (max-width: 640px) {
             .hero {
                 text-align: center;
-                padding: 6rem 2rem 2rem;
+                padding: 6rem 1rem 2rem;
             }
             .hero-title {
                 font-size: 2.5rem;
             }
             .section {
-                padding: 2rem 1rem;
+                padding: 2rem 0.5rem;
             }
             .project-image {
                 height: 300px;
@@ -561,6 +645,8 @@
             }
             .modal-content {
                 padding: 1.5rem;
+                width: 95%;
+                margin: 0 auto;
             }
             .modal-content h2 {
                 font-size: 1.5rem;
@@ -577,17 +663,29 @@
             body {
                 cursor: auto; /* Restore default cursor on mobile */
             }
+            .grid {
+                padding: 0;
+            }
         }
 
         @media (min-width: 768px) {
             .grid-cols-2 {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+            .project-card {
+                width: calc(50% - 0.75rem);
+                max-width: 400px;
+            }
         }
 
         @media (min-width: 1024px) {
             .grid-cols-4 {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+            .project-card {
+                width: calc(25% - 1.125rem);
+                min-width: 250px;
+                max-width: 300px;
             }
         }
     </style>
@@ -812,6 +910,7 @@
                                     <div className="dropdown-content">
                                         <a href="/tempohub" className="dropdown-link">Tempo Hub</a>
                                         <a href="https://strategicplay.xyz" className="dropdown-link" target="_blank" rel="noopener noreferrer">Strategic Play</a>
+                                        <a href="https://nomadshq.xyz" className="dropdown-link" target="_blank" rel="noopener noreferrer">Nomads</a>
                                         <a href="https://allstake.io/launches/pitbits" className="dropdown-link" target="_blank" rel="noopener noreferrer">PitBits</a>
                                         <a href="https://www.gaiaecosystem.com/" className="dropdown-link" target="_blank" rel="noopener noreferrer">Gaia Ecosystem</a>
                                         <a href="/cdcswigglescan" className="dropdown-link">CDC Swiggle Scan</a>
@@ -823,6 +922,7 @@
                                         <a href="/gamehub" className="dropdown-link">Game Hub</a>
                                         <a href="/pixeldraw" className="dropdown-link">Pixel Draw</a>
                                         <a href="/updatemetadata" className="dropdown-link">Update Metadata</a>
+                                        <a href="/mpc" className="dropdown-link">MPC</a>
                                     </div>
                                 </li>
                                 <li><a href="#about" className="navbar-link">About</a></li>
@@ -832,7 +932,12 @@
                             <button 
                                 className="mobile-menu-button" 
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                onTouchEnd={(e) => {
+                                    e.preventDefault();
+                                    setIsMobileMenuOpen(!isMobileMenuOpen);
+                                }}
                                 aria-label="Toggle menu"
+                                type="button"
                             >
                                 {isMobileMenuOpen ? '✕' : '☰'}
                             </button>
@@ -849,50 +954,63 @@
                                     className="mobile-menu-link" 
                                     onClick={(e) => {
                                         e.preventDefault();
+                                        e.stopPropagation();
                                         setIsMobileProjectsOpen(!isMobileProjectsOpen);
                                     }}
+                                    onTouchEnd={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setIsMobileProjectsOpen(!isMobileProjectsOpen);
+                                    }}
+                                    style={{cursor: 'pointer'}}
                                 >
                                     Projects {isMobileProjectsOpen ? '▴' : '▾'}
                                 </a>
                                 <div className={`mobile-dropdown ${isMobileProjectsOpen ? 'active' : ''}`}>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/tempohub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Tempo Hub</a>
+                                        <a href="/tempohub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Tempo Hub</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="https://strategicplay.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Strategic Play</a>
+                                        <a href="https://strategicplay.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Strategic Play</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="https://allstake.io/launches/pitbits" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>PitBits</a>
+                                        <a href="https://nomadshq.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Nomads</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="https://www.gaiaecosystem.com/" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Gaia Ecosystem</a>
+                                        <a href="https://allstake.io/launches/pitbits" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>PitBits</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/cdcswigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>CDC Swiggle Scan</a>
+                                        <a href="https://www.gaiaecosystem.com/" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Gaia Ecosystem</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/swigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Swiggle Scan</a>
+                                        <a href="/cdcswigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>CDC Swiggle Scan</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/nftgenerator" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>NFT Generator</a>
+                                        <a href="/swigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Swiggle Scan</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="https://www.gaiaecosystem.com/stake.html" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem'}}>Non-Custodial Stake</a>
+                                        <a href="/nftgenerator" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>NFT Generator</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/chess" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Online Chess</a>
+                                        <a href="https://www.gaiaecosystem.com/stake.html" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Non-Custodial Stake</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/airdrop" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Token Airdrop</a>
+                                        <a href="/chess" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Online Chess</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/gamehub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Game Hub</a>
+                                        <a href="/airdrop" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Token Airdrop</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/pixeldraw" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Pixel Draw</a>
+                                        <a href="/gamehub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Game Hub</a>
                                     </div>
                                     <div className="mobile-dropdown-item">
-                                        <a href="/updatemetadata" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem'}}>Update Metadata</a>
+                                        <a href="/pixeldraw" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Pixel Draw</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/updatemetadata" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Update Metadata</a>
+                                    </div>
+                                    <div className="mobile-dropdown-item">
+                                        <a href="/mpc" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>MPC</a>
                                     </div>
                                 </div>
                             </li>
@@ -930,7 +1048,7 @@
 
                     {/* Nomads Mint Section */}
                     <section className="section">
-                        <div className="max-w-4xl mx-auto text-center">
+                        <div className="max-w-4xl mx-auto text-center" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                              <img 
                                 src="./assets/nomads.png" 
                                 alt="Nomads Logo" 
@@ -951,11 +1069,11 @@
                             >
                                 Visit Nomads HQ
                             </a>
-                            <div className="project-card p-6">
+                            <div className="project-card p-6" style={{maxWidth: '600px', width: '100%', margin: '0 auto'}}>
                                 <iframe 
                                     id='iframe-widget' 
                                     src='https://0xbd11e8799e1d48fe607b6a471c66de84522e49c1_143.nfts2.me/?widget=classic' 
-                                    style={{height: '414px', width: '100%', border: 'none'}}
+                                    style={{height: '414px', width: '100%', maxWidth: '100%', border: 'none'}}
                                 />
                             </div>
                         </div>
@@ -966,7 +1084,7 @@
                         <h2 className="text-3xl sm:text-4xl font-bold text-center text-white font-orbitron mb-8">
                             Creations
                         </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto" style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
                              {/* Tempo Hub */}
                             <div className="project-card p-6">
                                 <img
@@ -976,7 +1094,7 @@
                                 />
                                 <h3 className="text-xl font-semibold text-white mb-2">Tempo Hub</h3>
                                 <p className="text-gray-400 mb-4">
-                                    Music production hub with BPM calculator, metronome, and rhythm tools
+                                    Comprehensive hub for Tempo Network featuring developer tools, ready-to-use templates.
                                 </p>
                                 <a
                                     href="/tempohub"
@@ -1204,11 +1322,11 @@
                                     Update
                                 </a>
                             </div>
-                            {/* Tempo Hub */}
+                            {/* Mpc */}
                             <div className="project-card p-6">
                                 <img
-                                    src="./assets/TempoHub.png"
-                                    alt="Tempo Hub"
+                                    src="./assets/MPC.png"
+                                    alt="MPC"
                                     className="project-image mb-4"
                                 />
                                 <h3 className="text-xl font-semibold text-white mb-2">Tempo Hub</h3>
@@ -1216,7 +1334,7 @@
                                     Music production hub with BPM calculator, metronome, and rhythm tools
                                 </p>
                                 <a
-                                    href="/tempohub"
+                                    href="/mpc"
                                     className="cta-button inline-block"
                                 >
                                     Launch
