@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Gaia Ecosystem card art">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#090b10"/>
+      <stop offset="100%" stop-color="#11141d"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#35d7b7"/>
+      <stop offset="100%" stop-color="#7c8cff"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="60%">
+      <stop offset="60%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.32"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <circle cx="860" cy="130" r="230" fill="#35d7b7" opacity="0.22"/>
+  <circle cx="160" cy="860" r="270" fill="#7c8cff" opacity="0.18"/>
+  <rect x="68" y="68" width="888" height="888" rx="54" fill="none" stroke="#2a3144" stroke-width="4"/>
+  <rect width="1024" height="1024" fill="url(#vignette)"/>
+
+  <rect x="112" y="108" width="240" height="46" rx="23" fill="#141c2c" stroke="#3a4564"/>
+<rect x="112" y="172" width="800" height="14" rx="7" fill="url(#accent)" filter="url(#glow)"/>
+
+  
+<g transform="translate(252 252)">
+  <circle cx="260" cy="260" r="98" fill="#17243a" stroke="#35d7b7" stroke-width="5"/>
+  <ellipse cx="260" cy="260" rx="208" ry="92" fill="none" stroke="#7c8cff" stroke-width="5"/>
+  <ellipse cx="260" cy="260" rx="156" ry="220" fill="none" stroke="#35d7b7" stroke-width="5" transform="rotate(32 260 260)"/>
+  <ellipse cx="260" cy="260" rx="192" ry="126" fill="none" stroke="#c08bff" stroke-width="5" transform="rotate(-28 260 260)"/>
+  <circle cx="468" cy="260" r="14" fill="#aefde4"/>
+</g>
+
+</svg>
