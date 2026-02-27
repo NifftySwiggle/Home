@@ -1649,6 +1649,14 @@
         });
       }
 
+      document.querySelectorAll('a[href]').forEach(function (link) {
+        const href = (link.getAttribute('href') || '').trim();
+        if (!href || href.startsWith('#')) return;
+
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
+      });
+
       const chips = Array.from(document.querySelectorAll('.chip'));
       const projectsGrid = document.getElementById('projects-grid');
       const projectCards = Array.from(document.querySelectorAll('#projects-grid .exp-card'));
