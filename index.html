@@ -1,1572 +1,2058 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/png" href="./assets/NSlogo.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./assets/NSlogo.png" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NifftySwiggle Studio</title>
-    <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600;800&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            overflow-x: hidden;
-            width: 100%;
-        }
-
-        body {
-            background: linear-gradient(45deg, #1a1a2e, #4b0082, #1e3a8a, #831843);
-            background-size: 400%;
-            animation: gradientShift 15s ease infinite;
-            color: #e5e7eb;
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            cursor: none; /* Hide default cursor */
-            width: 100%;
-            max-width: 100vw;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Navigation Bar Styles */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 1rem 2rem;
-            transition: all 0.3s ease;
-            width: 100%;
-            max-width: 100vw;
-            overflow: visible;
-        }
-
-        .navbar.scrolled {
-            background: rgba(0, 0, 0, 0.85);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .navbar-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 0;
-            position: relative;
-        }
-
-        .navbar-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-        }
-
-        .navbar-logo-img {
-            width: 40px;
-            height: 40px;
-            filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
-        }
-
-        .navbar-brand {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
-        }
-
-        .navbar-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            list-style: none;
-        }
-
-        .navbar-link {
-            color: #e5e7eb;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
-        }
-
-        .navbar-link:hover {
-            color: #ec4899;
-            text-shadow: 0 0 8px rgba(236, 72, 153, 0.6);
-        }
-
-        .navbar-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #3b82f6, #ec4899);
-            transition: width 0.3s ease;
-        }
-
-        .navbar-link:hover::after {
-            width: 100%;
-        }
-
-        .dropdown {
-            position: relative;
-        }
-
-        .navbar-menu {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            list-style: none;
-            position: static;
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            min-width: 220px;
-            max-height: 70vh;
-            overflow-y: auto;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            margin-top: 0.5rem;
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .dropdown-content::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Edge */
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        .dropdown.active .dropdown-content {
-            display: block;
-        }
-
-        .dropdown-arrow {
-            display: inline-block;
-            margin-left: 0.25rem;
-            transition: transform 0.3s ease;
-        }
-
-        .dropdown.active .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .mobile-dropdown {
-            display: none;
-            padding-left: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        .mobile-dropdown.active {
-            display: block;
-        }
-
-        .mobile-dropdown-item {
-            padding: 0.5rem 0;
-        }
-
-        .mobile-dropdown-item a {
-            display: block;
-            padding: 0.75rem;
-            margin: 0.25rem 0;
-            cursor: pointer;
-            -webkit-tap-highlight-color: rgba(236, 72, 153, 0.3);
-            touch-action: manipulation;
-        }
-
-        .dropdown-link {
-            display: block;
-            padding: 0.75rem 1.25rem;
-            color: #e5e7eb;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .dropdown-link:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-link:hover {
-            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), rgba(236, 72, 153, 0.2));
-            color: #ec4899;
-            padding-left: 1.5rem;
-        }
-
-        .navbar-cta {
-            background: linear-gradient(90deg, #3b82f6, #ec4899);
-            padding: 0.5rem 1.5rem;
-            border-radius: 9999px;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .navbar-cta:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.5);
-        }
-
-        .mobile-menu-button {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            line-height: 1;
-            -webkit-tap-highlight-color: rgba(236, 72, 153, 0.3);
-            touch-action: manipulation;
-            position: relative;
-            z-index: 101;
-        }
-
-        .mobile-menu-button:active {
-            color: #ec4899;
-            transform: scale(0.95);
-        }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 72px;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(12px);
-            padding: 2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 999;
-            max-height: calc(100vh - 72px);
-            overflow-y: auto;
-            scrollbar-width: none; /* Firefox */
-        }
-
-        .mobile-menu::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Edge */
-        }
-
-        .mobile-menu.active {
-            display: block;
-        }
-
-        .mobile-menu-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .mobile-menu-link {
-            color: #e5e7eb;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1.25rem;
-            transition: color 0.3s ease;
-            display: block;
-            padding: 0.5rem 0;
-            cursor: pointer;
-            -webkit-tap-highlight-color: rgba(236, 72, 153, 0.3);
-            touch-action: manipulation;
-        }
-
-        .mobile-menu-link:hover,
-        .mobile-menu-link:active {
-            color: #ec4899;
-        }
-
-        /* Custom Cursor */
-        #cursor {
-            position: fixed;
-            width: 12px;
-            height: 12px;
-            background: rgba(236, 72, 153, 0.6);
-            border: 2px solid transparent;
-            border-image: linear-gradient(45deg, #3b82f6, #ec4899) 1;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(236, 72, 153, 0.7), 0 0 25px rgba(59, 130, 246, 0.5);
-        }
-
-        /* Particle Effect */
-        .cursor-particle {
-            position: fixed;
-            width: 6px;
-            height: 6px;
-            background: rgba(59, 130, 246, 0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            animation: fadeParticle 1s ease-out forwards;
-        }
-
-        @keyframes fadeParticle {
-            0% { opacity: 0.5; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.2); }
-        }
-
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            padding-top: 80px;
-            width: 100%;
-        }
-
-        .hero-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://via.placeholder.com/1920x1080/2a2a4a/ec4899?text=Web3+Neon+Particles') no-repeat center center/cover;
-            filter: blur(8px);
-            opacity: 0.4;
-            transform: scale(1.1);
-            animation: pulse 10s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1.1); opacity: 0.4; }
-            50% { transform: scale(1.15); opacity: 0.5; }
-        }
-
-        .hero-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.7));
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.7), 0 0 20px rgba(236, 72, 153, 0.5);
-            transform: perspective(500px) translateZ(0);
-            transition: transform 0.3s ease;
-        }
-
-        .hero-title:hover {
-            transform: perspective(500px) translateZ(20px);
-        }
-
-        .section {
-            padding: 4rem 1rem;
-            position: relative;
-            width: 100%;
-            max-width: 100vw;
-        }
-
-        .project-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 1rem;
-            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-        }
-
-        .project-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(236, 72, 153, 0.1));
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-        }
-
-        .project-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 12px 32px rgba(236, 72, 153, 0.5), 0 0 40px rgba(59, 130, 246, 0.3);
-            border-color: rgba(236, 72, 153, 0.5);
-        }
-
-        .project-card:hover::before {
-            opacity: 1;
-        }
-
-        .project-image {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-radius: 0.5rem 0.5rem 0 0;
-            filter: brightness(0.9);
-            transition: filter 0.3s ease;
-        }
-
-        .project-card:hover .project-image {
-            filter: brightness(1.1);
-        }
-
-        .cta-button {
-            background: linear-gradient(90deg, #3b82f6, #ec4899);
-            padding: 0.75rem 2rem;
-            border-radius: 9999px;
-            color: white;
-            font-weight: 600;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .cta-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(236, 72, 153, 0.5);
-        }
-
-        .secondary-cta {
-            background: rgba(55, 65, 81, 0.8);
-            padding: 0.75rem 2rem;
-            border-radius: 9999px;
-            color: white;
-            font-weight: 600;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .secondary-cta:hover {
-            background: rgba(75, 85, 99, 0.8);
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
-        }
-
-        .parallax {
-            transform: translateY(0);
-        }
-
-        .footer {
-            background: rgba(0, 0, 0, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 2rem 1rem;
-            text-align: center;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 1rem;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            color: #e5e7eb;
-        }
-
-        .modal-content h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            color: #ffffff;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.7);
-        }
-
-        .modal-content p {
-            font-size: 1rem;
-            color: #d1d5db;
-            margin-bottom: 1.5rem;
-        }
-
-        .crypto-address {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            color: #ffffff;
-            word-break: break-all;
-            margin-bottom: 1rem;
-        }
-
-        .copy-button {
-            background: linear-gradient(90deg, #3b82f6, #ec4899);
-            padding: 0.5rem 1.5rem;
-            border-radius: 9999px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .copy-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.5);
-        }
-
-        .close-button {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1.5rem;
-            border-radius: 9999px;
-            color: #e5e7eb;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .close-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .shimmer-text {
-            background: linear-gradient(90deg, #ffffff 0%, #3b82f6 25%, #ec4899 50%, #3b82f6 75%, #ffffff 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s linear infinite;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 0% center; }
-            100% { background-position: 200% center; }
-        }
-
-        /* Custom Scrollbar Styling */
-        html::-webkit-scrollbar,
-        body::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
-        }
-
-        html::-webkit-scrollbar-track,
-        body::-webkit-scrollbar-track {
-            background: rgba(26, 26, 46, 0.8);
-            border-radius: 10px;
-        }
-
-        html::-webkit-scrollbar-thumb,
-        body::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #3b82f6, #ec4899);
-            border-radius: 10px;
-            border: 2px solid rgba(26, 26, 46, 0.8);
-            transition: all 0.3s ease;
-        }
-
-        html::-webkit-scrollbar-thumb:hover,
-        body::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #60a5fa, #f472b6);
-            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
-        }
-
-        html::-webkit-scrollbar-corner,
-        body::-webkit-scrollbar-corner {
-            background: rgba(26, 26, 46, 0.8);
-        }
-
-        /* Firefox Scrollbar */
-        html,
-        body {
-            scrollbar-width: thin;
-            scrollbar-color: #ec4899 rgba(26, 26, 46, 0.8);
-        }
-
-        @media (max-width: 1024px) {
-            .navbar-menu {
-                display: none;
-            }
-            .mobile-menu-button {
-                display: block;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-            }
-            .navbar-brand {
-                font-size: 1.25rem;
-            }
-            .navbar-logo-img {
-                width: 32px;
-                height: 32px;
-            }
-            .hero {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-            .section {
-                padding: 2rem 0.75rem;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .hero {
-                text-align: center;
-                padding: 6rem 1rem 2rem;
-            }
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            .section {
-                padding: 2rem 0.5rem;
-            }
-            .project-image {
-                height: 300px;
-            }
-            .cta-button, .secondary-cta {
-                padding: 0.5rem 1.5rem;
-                font-size: 0.875rem;
-            }
-            .hero-logo {
-                width: 80px;
-                height: 80px;
-            }
-            .modal-content {
-                padding: 1.5rem;
-                width: 95%;
-                margin: 0 auto;
-            }
-            .modal-content h2 {
-                font-size: 1.5rem;
-            }
-            .modal-content p {
-                font-size: 0.875rem;
-            }
-            .crypto-address {
-                font-size: 0.8rem;
-            }
-            #cursor, .cursor-particle {
-                display: none; /* Disable custom cursor on mobile */
-            }
-            body {
-                cursor: auto; /* Restore default cursor on mobile */
-            }
-            .grid {
-                padding: 0;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .grid-cols-2 {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-            .project-card {
-                width: calc(50% - 0.75rem);
-                max-width: 400px;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .grid-cols-4 {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-            .project-card {
-                width: calc(25% - 1.125rem);
-                min-width: 250px;
-                max-width: 300px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NifftySwiggle Studio builds high-utility Web3 tools and playful on-chain experiences for creators, communities, and product teams." />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#090b10" />
+  <link rel="canonical" href="https://nifftyswiggle.pw/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="NifftySwiggle Studio" />
+  <meta property="og:title" content="NifftySwiggle Studio | Web3 Product Studio" />
+  <meta property="og:description" content="High-utility Web3 tools, creator platforms, and on-chain experiences designed for real users." />
+  <meta property="og:url" content="https://nifftyswiggle.pw/" />
+  <meta property="og:image" content="https://nifftyswiggle.pw/assets/NSlogo.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="NifftySwiggle Studio | Web3 Product Studio" />
+  <meta name="twitter:description" content="High-utility Web3 tools, creator platforms, and on-chain experiences designed for real users." />
+  <meta name="twitter:image" content="https://nifftyswiggle.pw/assets/NSlogo.png" />
+  <link rel="icon" type="image/png" href="./assets/NSlogo.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/NSlogo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <title>NifftySwiggle Studio | Web3 Product Studio</title>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "NifftySwiggle Studio",
+      "url": "https://nifftyswiggle.pw/",
+      "description": "NifftySwiggle Studio builds high-utility Web3 tools and playful on-chain experiences for creators, communities, and product teams.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "NifftySwiggle Studio",
+        "url": "https://nifftyswiggle.pw/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://nifftyswiggle.pw/assets/NSlogo.png"
+        },
+        "sameAs": [
+          "https://github.com/nifftyswiggle",
+          "https://x.com/pet_rescueNFT",
+          "https://nomadshq.xyz"
+        ]
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg: #090b10;
+      --bg-elev: #11141d;
+      --bg-soft: #151925;
+      --text: #eef1f8;
+      --text-soft: #aeb7cc;
+      --line: #2a3144;
+      --primary: #7c8cff;
+      --secondary: #35d7b7;
+      --accent: #c08bff;
+      --success: #8bf8cd;
+      --max: 1180px;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --space-1: 0.5rem;
+      --space-2: 0.75rem;
+      --space-3: 1rem;
+      --space-4: 1.5rem;
+      --space-5: 2rem;
+      --space-6: 3rem;
+      --space-7: 4rem;
+      --space-8: 6rem;
+      --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
+      --shadow-focus: 0 0 0 3px rgba(124, 140, 255, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-color: #445075 #0f1320;
+      scrollbar-width: thin;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 85% -10%, rgba(124, 140, 255, 0.25), transparent 65%),
+        radial-gradient(1000px 500px at -10% 20%, rgba(192, 139, 255, 0.2), transparent 70%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -50px;
+      left: 16px;
+      z-index: 2000;
+      background: #ffffff;
+      color: #000000;
+      padding: 0.625rem 0.875rem;
+      border-radius: 10px;
+      font-weight: 700;
+      transition: top 0.2s ease;
+    }
+
+    .skip-link:focus-visible {
+      top: 16px;
+      outline: none;
+    }
+
+    .container {
+      width: min(100% - 2rem, var(--max));
+      margin-inline: auto;
+    }
+
+    .container > * {
+      min-width: 0;
+    }
+
+    .section {
+      padding-block: var(--space-8);
+      content-visibility: auto;
+      contain-intrinsic-size: 1px 960px;
+      scroll-margin-top: 96px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid rgba(124, 140, 255, 0.4);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      color: #c7d1ff;
+      font-size: 0.78rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+      background: rgba(124, 140, 255, 0.08);
+    }
+
+    .section-title {
+      font-family: Sora, Inter, sans-serif;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      font-size: clamp(1.9rem, 3.4vw, 3rem);
+      margin-bottom: var(--space-3);
+    }
+
+    .section-subtitle {
+      color: var(--text-soft);
+      max-width: 68ch;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1200;
+      backdrop-filter: blur(10px);
+      background: rgba(10, 12, 18, 0.72);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .header-wrap {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: 700;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .brand img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 0 20px rgba(124, 140, 255, 0.35);
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .main-nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .main-nav a {
+      color: #dbe2f5;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 0.4rem;
+      border-radius: 8px;
+    }
+
+    .main-nav a:hover {
+      color: #ffffff;
+    }
+
+    .btn,
+    button.btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      padding: 0.72rem 1.15rem;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #ffffff;
+      box-shadow: 0 8px 26px rgba(124, 140, 255, 0.35);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.06);
+    }
+
+    .btn-ghost {
+      border-color: #3a425b;
+      color: #dce3f4;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .btn-ghost:hover {
+      border-color: #566282;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    :is(a, button, input, [role="button"]):focus-visible {
+      outline: none;
+      box-shadow: var(--shadow-focus);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      color: #edf2ff;
+      border: 1px solid #3f4861;
+      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      padding-block: clamp(5rem, 11vw, 9rem) clamp(4rem, 9vw, 7rem);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(500px 260px at var(--mx, 50%) var(--my, 30%), rgba(53, 215, 183, 0.16), transparent 70%),
+        radial-gradient(420px 220px at 75% 0%, rgba(124, 140, 255, 0.22), transparent 72%);
+      transition: background-position 180ms linear;
+    }
+
+    .hero-grid {
+      display: grid;
+      gap: var(--space-6);
+      align-items: end;
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    .impact-group {
+      --impact-distance: 110px;
+      --impact-rotate: 4deg;
+      --aftershock-left: -5px;
+      --aftershock-right: 4px;
+    }
+
+    .impact-hero {
+      --impact-distance: 128px;
+      --impact-rotate: 4.6deg;
+      --aftershock-left: -6px;
+      --aftershock-right: 5px;
+    }
+
+    .impact-flagship {
+      --impact-distance: 120px;
+      --impact-rotate: 4.2deg;
+      --aftershock-left: -6px;
+      --aftershock-right: 4px;
+    }
+
+    .impact-capabilities,
+    .impact-projects {
+      --impact-distance: 104px;
+      --impact-rotate: 3.6deg;
+      --aftershock-left: -4px;
+      --aftershock-right: 3px;
+    }
+
+    .impact-process {
+      --impact-distance: 78px;
+      --impact-rotate: 2.6deg;
+      --aftershock-left: -2.5px;
+      --aftershock-right: 2px;
+    }
+
+    .impact-story {
+      --impact-distance: 70px;
+      --impact-rotate: 2.2deg;
+      --aftershock-left: -2px;
+      --aftershock-right: 1.5px;
+    }
+
+    .impact-item {
+      will-change: transform;
+      transform-origin: center;
+    }
+
+    .impact-active .impact-item.impact-enter-left,
+    .impact-item-active.impact-enter-left {
+      animation: impactFromLeft 980ms cubic-bezier(0.18, 0.78, 0.19, 1) both;
+    }
+
+    .impact-active .impact-item.impact-enter-right,
+    .impact-item-active.impact-enter-right {
+      animation: impactFromRight 980ms cubic-bezier(0.18, 0.78, 0.19, 1) both;
+    }
+
+    .impact-active .impact-item.impact-enter-center,
+    .impact-item-active.impact-enter-center {
+      animation: impactCenterHit 980ms cubic-bezier(0.18, 0.78, 0.19, 1) both;
+    }
+
+    @keyframes impactFromLeft {
+      0% { transform: translateX(calc(var(--impact-distance) * -1)) rotate(calc(var(--impact-rotate) * -1)); }
+      34% { transform: translateX(18px) rotate(1.5deg); }
+      48% { transform: translateX(-12px) rotate(-1deg); }
+      64% { transform: translateX(7px) rotate(0.6deg); }
+      80% { transform: translateX(-3px) rotate(-0.3deg); }
+      100% { transform: translateX(0) rotate(0); }
+    }
+
+    @keyframes impactFromRight {
+      0% { transform: translateX(var(--impact-distance)) rotate(var(--impact-rotate)); }
+      34% { transform: translateX(-18px) rotate(-1.5deg); }
+      48% { transform: translateX(12px) rotate(1deg); }
+      64% { transform: translateX(-7px) rotate(-0.6deg); }
+      80% { transform: translateX(3px) rotate(0.3deg); }
+      100% { transform: translateX(0) rotate(0); }
+    }
+
+    @keyframes impactCenterHit {
+      0% { transform: scale(0.94) translateX(0); }
+      28% { transform: scale(1.035) translateX(3px); }
+      46% { transform: scale(0.99) translateX(-3px); }
+      66% { transform: scale(1.01) translateX(2px); }
+      82% { transform: scale(0.998) translateX(-1px); }
+      100% { transform: scale(1) translateX(0); }
+    }
+
+    .hero h1 {
+      font-family: Sora, Inter, sans-serif;
+      line-height: 1.03;
+      letter-spacing: -0.03em;
+      font-size: clamp(2.25rem, 5.8vw, 4.5rem);
+      max-width: 16ch;
+      margin-bottom: var(--space-4);
+    }
+
+    .hero h1,
+    .section-title,
+    .section-subtitle,
+    .card h3,
+    .card p,
+    .exp-body h3,
+    .exp-body p,
+    .contact h2,
+    .contact p,
+    .story p,
+    .proof-panel p {
+      overflow-wrap: break-word;
+      hyphens: auto;
+    }
+
+    .hero h1 span {
+      color: #d7e2ff;
+      background: linear-gradient(90deg, #ffffff, #d7deff 55%, #9ef0df);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: #bcc7df;
+      font-size: clamp(1rem, 1.4vw, 1.22rem);
+      max-width: 58ch;
+      margin-bottom: var(--space-5);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+      margin-bottom: var(--space-5);
+    }
+
+    .proof-badges {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+    }
+
+    .proof-badges li {
+      border: 1px solid #323a51;
+      background: rgba(18, 22, 33, 0.75);
+      border-radius: 999px;
+      padding: 0.42rem 0.72rem;
+      font-size: 0.82rem;
+      color: #cad4ec;
+    }
+
+    .hero-panel {
+      background: linear-gradient(170deg, rgba(24, 30, 45, 0.95), rgba(16, 19, 29, 0.94));
+      border: 1px solid #31384f;
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-panel h2 {
+      font-family: Sora, Inter, sans-serif;
+      line-height: 1.2;
+      font-size: 1.2rem;
+      margin-bottom: var(--space-2);
+    }
+
+    .hero-panel p {
+      font-size: 0.97rem;
+      color: #b9c4dd;
+      margin-bottom: var(--space-4);
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    .metric {
+      border: 1px solid #353f59;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.02);
+      padding: var(--space-3);
+    }
+
+    .metric strong {
+      display: block;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 1.35rem;
+      color: #f4f7ff;
+      margin-bottom: 0.25rem;
+    }
+
+    .metric span {
+      color: #9faac2;
+      font-size: 0.85rem;
+    }
+
+    .flagship-grid,
+    .capabilities-grid,
+    .experiments-grid,
+    .proof-grid,
+    .process-grid {
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .hero-grid > *,
+    .flagship-grid > *,
+    .capabilities-grid > *,
+    .experiments-grid > *,
+    .proof-grid > *,
+    .process-grid > * {
+      min-width: 0;
+    }
+
+    .flagship-grid {
+      margin-top: var(--space-6);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card {
+      border-radius: var(--radius-md);
+      border: 1px solid #323b53;
+      background: linear-gradient(175deg, #161b27, #121722);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+      transition: transform 220ms ease, border-color 220ms ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: #4a5576;
+    }
+
+    .card img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-bottom: 1px solid #2d3550;
+      background: #0f1422;
+    }
+
+    .card-body {
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: 0.68rem;
+      flex: 1;
+    }
+
+    .card-tag {
+      display: inline-flex;
+      align-self: flex-start;
+      border-radius: 999px;
+      border: 1px solid #435073;
+      color: #cdd8f7;
+      padding: 0.22rem 0.58rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .card h3 {
+      font-family: Sora, Inter, sans-serif;
+      font-size: 1.15rem;
+      line-height: 1.2;
+    }
+
+    .card p {
+      color: #b1bdd7;
+      font-size: 0.94rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .card .result {
+      color: var(--success);
+      font-weight: 600;
+      font-size: 0.86rem;
+      margin-top: auto;
+      margin-bottom: 0.9rem;
+    }
+
+    .capabilities-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: var(--space-6);
+    }
+
+    .capability {
+      border: 1px solid #33405d;
+      border-radius: var(--radius-md);
+      background: rgba(15, 19, 28, 0.8);
+      padding: var(--space-4);
+    }
+
+    .capability h3 {
+      font-family: Sora, Inter, sans-serif;
+      font-size: 1rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .capability p {
+      color: #b1bdd6;
+      font-size: 0.92rem;
+    }
+
+    .toolbar {
+      margin-top: var(--space-5);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .chip {
+      border-radius: 999px;
+      border: 1px solid #3a4564;
+      color: #c8d3ef;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.45rem 0.8rem;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .chip[aria-pressed="true"] {
+      background: linear-gradient(90deg, rgba(124, 140, 255, 0.34), rgba(53, 215, 183, 0.22));
+      border-color: #7484bf;
+      color: #f0f4ff;
+    }
+
+    .toolbar output {
+      margin-left: auto;
+      color: #aeb9d3;
+      font-size: 0.86rem;
+      min-width: 96px;
+      text-align: right;
+    }
+
+    .experiments-grid {
+      margin-top: var(--space-4);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .exp-card {
+      border-radius: var(--radius-md);
+      border: 1px solid #313a52;
+      background: #131927;
+      overflow: hidden;
+      transition: transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exp-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .exp-card img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+      border-bottom: 1px solid #29314a;
+    }
+
+    .exp-body {
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-body .btn,
+    .exp-body .btn {
+      margin-top: auto;
+      align-self: flex-start;
+    }
+
+    .exp-body h3 {
+      font-size: 1rem;
+      font-family: Sora, Inter, sans-serif;
+      margin-bottom: 0.38rem;
+    }
+
+    .exp-body p {
+      color: #adbad6;
+      font-size: 0.9rem;
+      margin-bottom: 0.72rem;
+    }
+
+    .exp-body .meta {
+      color: #8d99b4;
+      font-size: 0.8rem;
+    }
+
+    .process-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: var(--space-6);
+    }
+
+    .step {
+      border-radius: var(--radius-md);
+      border: 1px solid #32405f;
+      padding: var(--space-4);
+      background: rgba(14, 18, 27, 0.88);
+      position: relative;
+    }
+
+    .step .index {
+      display: inline-flex;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      border: 1px solid #576897;
+      color: #dce5ff;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      font-size: 0.88rem;
+    }
+
+    .step h3 {
+      font-family: Sora, Inter, sans-serif;
+      font-size: 1rem;
+      margin-bottom: 0.36rem;
+    }
+
+    .step p {
+      color: #aeb8cf;
+      font-size: 0.9rem;
+    }
+
+    .proof-grid {
+      margin-top: var(--space-6);
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: stretch;
+    }
+
+    .story,
+    .proof-panel {
+      border-radius: var(--radius-lg);
+      border: 1px solid #313a50;
+      background: linear-gradient(170deg, #141a27, #10141f);
+      padding: var(--space-5);
+    }
+
+    .story p + p {
+      margin-top: var(--space-3);
+    }
+
+    .story p,
+    .proof-panel p {
+      color: #b8c4dc;
+    }
+
+    .stats {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    .stats li {
+      border: 1px solid #3a4563;
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .stats strong {
+      display: block;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 1.25rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .stats span {
+      color: #9da9c4;
+      font-size: 0.84rem;
+    }
+
+    .contact {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .contact-wrap {
+      border-radius: var(--radius-lg);
+      border: 1px solid #384161;
+      background:
+        radial-gradient(700px 260px at 85% -10%, rgba(53, 215, 183, 0.18), transparent 70%),
+        linear-gradient(165deg, #171f30, #121927);
+      padding: clamp(1.2rem, 5vw, 2.3rem);
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-5);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .contact h2 {
+      font-family: Sora, Inter, sans-serif;
+      line-height: 1.15;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      margin-bottom: 0.4rem;
+    }
+
+    .contact p {
+      color: #b7c3dd;
+      max-width: 58ch;
+    }
+
+    .contact-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .contact-links a {
+      border: 1px solid #4a5677;
+      border-radius: 999px;
+      padding: 0.52rem 0.82rem;
+      color: #d5dff6;
+      font-size: 0.86rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .site-footer {
+      padding-block: 1.5rem 2.25rem;
+      color: #909ab2;
+      font-size: 0.84rem;
+    }
+
+    .footer-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 500ms ease, transform 500ms ease;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal.contact-swiggle {
+      transform: translateY(96px) rotate(2deg);
+    }
+
+    .reveal.contact-swiggle.show {
+      opacity: 1;
+      transform: translateY(0) rotate(0);
+      animation: contactSwiggleIn 900ms cubic-bezier(0.18, 0.78, 0.19, 1) both;
+    }
+
+    .cursor-dot {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 2100;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity 200ms ease;
+      mix-blend-mode: screen;
+    }
+
+    .cursor-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(139, 248, 205, 0.88);
+      box-shadow: 0 0 12px rgba(139, 248, 205, 0.58);
+    }
+
+    .tap-ripple {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2099;
+      border: 1px solid rgba(139, 248, 205, 0.58);
+      background: radial-gradient(circle at center, rgba(139, 248, 205, 0.26), rgba(124, 140, 255, 0.03) 66%, transparent 74%);
+      box-shadow: 0 0 14px rgba(124, 140, 255, 0.19);
+      transform: translate(-50%, -50%);
+      animation: tapRipple 760ms cubic-bezier(0.15, 0.64, 0.22, 1) forwards;
+    }
+
+    .tap-ripple::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(192, 139, 255, 0.48);
+      transform: scale(0.72);
+      animation: tapRippleInner 760ms cubic-bezier(0.15, 0.64, 0.22, 1) forwards;
+    }
+
+    .cursor-dot.cursor-hover {
+      transform: translate(-50%, -50%) scale(1.28);
+      background: rgba(192, 139, 255, 0.95);
+      box-shadow: 0 0 14px rgba(192, 139, 255, 0.58);
+    }
+
+    .cursor-dot.cursor-down {
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+
+    @keyframes tapRipple {
+      0% {
+        opacity: 0.75;
+        transform: translate(-50%, -50%) scale(0.25);
+      }
+      60% {
+        opacity: 0.4;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(4.8);
+      }
+    }
+
+    @keyframes tapRippleInner {
+      0% {
+        opacity: 0.6;
+        transform: scale(0.5);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2.8);
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .has-cursor-effects,
+      .has-cursor-effects a,
+      .has-cursor-effects button,
+      .has-cursor-effects .chip,
+      .has-cursor-effects .btn {
+        cursor: none;
+      }
+
+      .has-cursor-effects .cursor-dot {
+        opacity: 1;
+      }
+    }
+
+    @keyframes contactSwiggleIn {
+      0% { transform: translateY(110px) rotate(2.8deg) scale(0.98); }
+      42% { transform: translateY(-9px) rotate(-1.15deg) scale(1.01); }
+      62% { transform: translateY(6px) rotate(0.7deg) scale(0.998); }
+      80% { transform: translateY(-3px) rotate(-0.35deg) scale(1.001); }
+      100% { transform: translateY(0) rotate(0) scale(1); }
+    }
+
+    @media (max-width: 1080px) {
+      .hero-grid,
+      .proof-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flagship-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .capabilities-grid,
+      .process-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .experiments-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .header-wrap {
+        min-height: 64px;
+      }
+
+      .main-nav {
+        position: fixed;
+        inset: 64px 0 auto;
+        background: rgba(10, 13, 20, 0.98);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: none;
+        padding: var(--space-4) var(--space-3) var(--space-5);
+      }
+
+      .main-nav.open {
+        display: grid;
+        gap: var(--space-3);
+      }
+
+      .main-nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+      }
+
+      .main-nav .btn {
+        width: fit-content;
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+      }
+
+      .flagship-grid,
+      .capabilities-grid,
+      .experiments-grid,
+      .process-grid,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding-block: 4.2rem;
+      }
+
+      .hero {
+        padding-block: 4.4rem 3.4rem;
+      }
+
+      .hero h1 {
+        max-width: 100%;
+        font-size: clamp(1.9rem, 9vw, 2.8rem);
+      }
+
+      .hero p,
+      .section-subtitle {
+        font-size: 0.97rem;
+      }
+
+      .hero-panel,
+      .story,
+      .proof-panel {
+        padding: var(--space-4);
+      }
+
+      .hero-actions {
+        width: 100%;
+      }
+
+      .hero-actions .btn {
+        flex: 1 1 180px;
+      }
+
+      .proof-badges li {
+        font-size: 0.78rem;
+      }
+
+      .toolbar {
+        align-items: stretch;
+      }
+
+      .toolbar output {
+        margin-left: 0;
+        width: 100%;
+        text-align: left;
+      }
+
+      .contact-wrap {
+        align-items: flex-start;
+      }
+
+      .contact-links {
+        width: 100%;
+      }
+
+      .contact-links a {
+        flex: 1 1 140px;
+        text-align: center;
+      }
+
+      .impact-group {
+        --impact-distance: 62px;
+        --impact-rotate: 2.3deg;
+        --aftershock-left: -3px;
+        --aftershock-right: 2px;
+      }
+
+      .impact-hero {
+        --impact-distance: 74px;
+        --impact-rotate: 2.8deg;
+        --aftershock-left: -3.5px;
+        --aftershock-right: 2.6px;
+      }
+
+      .impact-flagship {
+        --impact-distance: 70px;
+        --impact-rotate: 2.6deg;
+        --aftershock-left: -3px;
+        --aftershock-right: 2.3px;
+      }
+
+      .impact-capabilities,
+      .impact-projects {
+        --impact-distance: 60px;
+        --impact-rotate: 2.1deg;
+        --aftershock-left: -2.4px;
+        --aftershock-right: 1.8px;
+      }
+
+      .impact-process {
+        --impact-distance: 46px;
+        --impact-rotate: 1.6deg;
+        --aftershock-left: -1.5px;
+        --aftershock-right: 1.2px;
+      }
+
+      .impact-story {
+        --impact-distance: 42px;
+        --impact-rotate: 1.4deg;
+        --aftershock-left: -1.2px;
+        --aftershock-right: 1px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: min(100% - 1.25rem, var(--max));
+      }
+
+      .section {
+        padding-block: 3.4rem;
+      }
+
+      .hero-actions .btn,
+      .contact-links a {
+        width: 100%;
+      }
+
+      .card-body,
+      .exp-body,
+      .capability,
+      .step,
+      .metric {
+        padding: var(--space-3);
+      }
+
+      .metric strong {
+        font-size: 1.15rem;
+      }
+
+      .site-footer {
+        font-size: 0.78rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      .reveal,
+      .reveal.show {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div id="root"></div>
-    <div id="cursor"></div>
-    <div id="cursor-trail"></div>
-    <script type="text/babel">
-        const { useEffect, useState } = React;
+  <a href="#main" class="skip-link">Skip to main content</a>
 
-        const App = () => {
-            const [isModalOpen, setIsModalOpen] = useState(false);
-            const [copyStatus, setCopyStatus] = useState('Copy Address');
-            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-            const [isMobileProjectsOpen, setIsMobileProjectsOpen] = useState(false);
-            const [isScrolled, setIsScrolled] = useState(false);
-            const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
+  <header class="site-header" aria-label="Site header">
+    <div class="container header-wrap">
+      <a href="#home" class="brand" aria-label="NifftySwiggle Studio home">
+        <img src="./assets/NSlogo.png" alt="NifftySwiggle Studio logo" width="34" height="34" />
+        <span>NifftySwiggle Studio</span>
+      </a>
 
-            const cryptoAddress = '0x71074075bA6FFE0BF39aCb6EDEF09b3b6be3AB6f'; // Replace with your actual crypto address
+      <button class="menu-toggle" id="menu-toggle" aria-controls="main-nav" aria-expanded="false" aria-label="Open menu" type="button">
+        ☰
+      </button>
 
-            const handleCopyAddress = () => {
-                navigator.clipboard.writeText(cryptoAddress).then(() => {
-                    setCopyStatus('Copied!');
-                    setTimeout(() => setCopyStatus('Copy Address'), 2000);
-                }).catch(() => {
-                    setCopyStatus('Failed to copy');
-                });
-            };
+      <nav class="main-nav" id="main-nav" aria-label="Primary navigation">
+        <ul>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#capabilities">Capabilities</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <a href="https://discord.gg/CaSgfqdYCW" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Start a Project</a>
+      </nav>
+    </div>
+  </header>
 
-            // Navbar scroll effect
-            useEffect(() => {
-                const handleScroll = () => {
-                    setIsScrolled(window.scrollY > 50);
-                };
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
+  <main id="main">
+    <section class="hero" id="home" aria-label="Hero">
+      <div class="container hero-grid impact-group impact-hero">
+        <div class="hero-collision-left impact-left">
+          <p class="eyebrow">Web3 Product Studio</p>
+          <h1><span>We craft Web3 products people actually use.</span></h1>
+          <p>
+            NifftySwiggle Studio turns complex blockchain workflows into intuitive tools, creator platforms, and on-chain game experiences that teams can launch with confidence.
+          </p>
+          <div class="hero-actions">
+            <a href="#work" class="btn btn-primary">Explore Work</a>
+            <a href="#contact" class="btn btn-ghost">Book Collaboration</a>
+          </div>
+          <ul class="proof-badges" aria-label="Studio highlights">
+            <li>Web3 Utilities</li>
+            <li>NFT Infrastructure</li>
+            <li>On-Chain Game Concepts</li>
+            <li>Fast Product Iteration</li>
+          </ul>
+        </div>
 
-            // Close mobile menu on link click
-            const handleLinkClick = () => {
-                setIsMobileMenuOpen(false);
-                setIsMobileProjectsOpen(false);
-            };
+        <aside class="hero-panel reveal hero-collision-right impact-right" aria-label="Studio snapshot">
+          <h2>Designed for creators, developers, and communities.</h2>
+          <p>
+            From one-click NFT tooling to interactive gaming prototypes, each build is focused on shipping useful experiences with clean UX and technical depth.
+          </p>
+          <div class="hero-metrics" aria-label="Key studio metrics">
+            <div class="metric">
+              <strong class="countup" data-target="15" data-suffix="+">15+</strong>
+              <span>Products launched</span>
+            </div>
+            <div class="metric">
+              <strong class="countup" data-target="4">4</strong>
+              <span>Core capability pillars</span>
+            </div>
+            <div class="metric">
+              <strong>Web3</strong>
+              <span>Production-first workflows</span>
+            </div>
+            <div class="metric">
+              <strong>Global</strong>
+              <span>Community reach</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
 
-            // Close dropdowns when mobile menu closes
-            useEffect(() => {
-                if (!isMobileMenuOpen) {
-                    setIsMobileProjectsOpen(false);
-                }
-            }, [isMobileMenuOpen]);
+    <section class="section" id="work" aria-labelledby="work-title">
+      <div class="container">
+        <p class="eyebrow">Flagship Work</p>
+        <h2 class="section-title" id="work-title">Built for utility, crafted for delight.</h2>
+        <p class="section-subtitle">
+          A curated selection of work that highlights product clarity, practical utility, and strong community outcomes.
+        </p>
 
-            // Custom Cursor Logic
-            useEffect(() => {
-                const cursor = document.getElementById('cursor');
-                const trailContainer = document.getElementById('cursor-trail');
-                const particles = [];
-                const maxParticles = 10;
+        <div class="flagship-grid impact-group impact-flagship">
+          <article class="card reveal impact-left">
+            <img src="./assets/cards/tempo-hub.svg" alt="Tempo Hub dashboard interface" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="card-body">
+              <span class="card-tag">Platform</span>
+              <h3>Tempo Hub</h3>
+              <p>A central experience for Tempo ecosystem users with practical utilities and creator-first workflows.</p>
+              <a href="/tempohub" class="btn btn-ghost">View Project</a>
+            </div>
+          </article>
 
-                // Update cursor position
-                const updateCursor = (e) => {
-                    cursor.style.left = `${e.clientX}px`;
-                    cursor.style.top = `${e.clientY}px`;
+          <article class="card reveal impact-right">
+            <img src="./assets/cards/strategic-play.svg" alt="Strategic Play collection branding" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="card-body">
+              <span class="card-tag">Collection</span>
+              <h3>Strategic Play</h3>
+              <p>Web3 collection concept focused on strategic identity and community-driven storytelling.</p>
+              <a href="https://strategicplay.xyz" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Visit</a>
+            </div>
+          </article>
 
-                    // Create particle
-                    const particle = document.createElement('div');
-                    particle.className = 'cursor-particle';
-                    const offsetX = (Math.random() - 0.5) * 10;
-                    const offsetY = (Math.random() - 0.5) * 10;
-                    particle.style.left = `${e.clientX + offsetX}px`;
-                    particle.style.top = `${e.clientY + offsetY}px`;
-                    trailContainer.appendChild(particle);
-                    particles.push(particle);
+          <article class="card reveal">
+            <img src="./assets/cards/nomads.svg" alt="Nomads collection visual" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="card-body">
+              <span class="card-tag">Collection</span>
+              <h3>Nomads</h3>
+              <p>A community-led digital collection with a focused identity, drop narrative, and mint experience.</p>
+              <a href="https://nomadshq.xyz" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Visit Nomads HQ</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
-                    // Remove oldest particle if limit reached
-                    if (particles.length > maxParticles) {
-                        const oldParticle = particles.shift();
-                        oldParticle.remove();
-                    }
+    <section class="section" id="capabilities" aria-labelledby="capabilities-title">
+      <div class="container">
+        <p class="eyebrow">Capabilities</p>
+        <h2 class="section-title" id="capabilities-title">From strategy to shipping.</h2>
+        <p class="section-subtitle">
+          End-to-end product support for Web3 teams that need precision, speed, and execution quality.
+        </p>
 
-                    // Remove particle after animation
-                    particle.addEventListener('animationend', () => {
-                        particle.remove();
-                        const index = particles.indexOf(particle);
-                        if (index > -1) particles.splice(index, 1);
-                    });
-                };
+        <div class="capabilities-grid impact-group impact-capabilities">
+          <article class="capability reveal impact-left">
+            <h3>Product Strategy</h3>
+            <p>Clarify user journeys, feature priority, and conversion architecture before implementation.</p>
+          </article>
+          <article class="capability reveal impact-right">
+            <h3>Web3 Tooling UX</h3>
+            <p>Design interfaces that simplify token, NFT, and smart contract interactions for real users.</p>
+          </article>
+          <article class="capability reveal">
+            <h3>Playable Experiences</h3>
+            <p>Create lightweight game and interaction concepts that blend community, engagement, and utility.</p>
+          </article>
+          <article class="capability reveal">
+            <h3>Launch Systems</h3>
+            <p>Ship marketing-ready product pages and ecosystem hubs with measurable user outcomes.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-                // Only enable cursor effect on non-touch devices
-                if (!('ontouchstart' in window)) {
-                    document.addEventListener('mousemove', updateCursor);
-                }
+    <section class="section" id="experiments" aria-labelledby="experiments-title">
+      <div class="container">
+        <p class="eyebrow">All Projects</p>
+        <h2 class="section-title" id="experiments-title">Explore the broader studio ecosystem.</h2>
+        <p class="section-subtitle">
+          Filter by category to quickly find tools, games, and infrastructure projects.
+        </p>
 
-                // Cleanup event listener
-                return () => {
-                    if (!('ontouchstart' in window)) {
-                        document.removeEventListener('mousemove', updateCursor);
-                    }
-                };
-            }, []);
+        <div class="toolbar" role="toolbar" aria-label="Project filters">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" type="button" data-filter="tool" aria-pressed="false">Tools</button>
+          <button class="chip" type="button" data-filter="game" aria-pressed="false">Games</button>
+          <button class="chip" type="button" data-filter="infra" aria-pressed="false">Infrastructure</button>
+          <button class="chip" type="button" data-filter="creative" aria-pressed="false">Creative</button>
+          <output id="results-count" aria-live="polite">12 projects</output>
+        </div>
 
-            // GSAP Animations
-            useEffect(() => {
-                gsap.registerPlugin(ScrollTrigger);
+        <div class="experiments-grid impact-group impact-projects" id="projects-grid" data-impact-mode="items">
+          <article class="exp-card reveal impact-left" data-category="infra">
+            <img src="./assets/cards/swiggle-scan.svg" alt="Swiggle Scan interface" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Swiggle Scan</h3>
+              <p>Address and token scanning utility inspired by classic blockchain explorers.</p>
+              <p class="meta">Infrastructure</p>
+              <a href="/swigglescan" class="btn btn-ghost">Open</a>
+            </div>
+          </article>
 
-                // Configure ScrollTrigger for better performance
-                ScrollTrigger.config({
-                    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
-                });
+          <article class="exp-card reveal impact-right" data-category="tool">
+            <img src="./assets/cards/nft-generator.svg" alt="NFT Generator interface" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>NFT Generator</h3>
+              <p>Generate layered NFT collections without code and export efficiently.</p>
+              <p class="meta">Tool</p>
+              <a href="/nftgenerator" class="btn btn-ghost">Open</a>
+            </div>
+          </article>
 
-                // Hero text and logo animation
-                gsap.from(".hero-content", {
-                    opacity: 0,
-                    y: 50,
-                    duration: 1.2,
-                    ease: "power3.out",
-                    delay: 0.2
-                });
+          <article class="exp-card reveal" data-category="infra">
+            <img src="./assets/cards/non-custodial-stake.svg" alt="Non-custodial staking platform screenshot" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Non-Custodial Stake</h3>
+              <p>Configurable staking pools with creator-controlled reward logic.</p>
+              <p class="meta">Infrastructure</p>
+              <a href="https://www.gaiaecosystem.com/stake.html" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Open</a>
+            </div>
+          </article>
 
-                gsap.from(".hero-logo", {
-                    opacity: 0,
-                    scale: 0.8,
-                    rotation: -10,
-                    duration: 1,
-                    ease: "back.out(1.4)",
-                    delay: 0.4
-                });
+          <article class="exp-card reveal" data-category="game">
+            <img src="./assets/cards/online-chess.svg" alt="Online chess interface" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Online Chess</h3>
+              <p>Competitive multiplayer chess concept with on-chain reward thinking.</p>
+              <p class="meta">Game</p>
+              <a href="/chess" class="btn btn-ghost">Play</a>
+            </div>
+          </article>
 
-                // Project cards animation with stagger
-                gsap.utils.toArray(".project-card").forEach((card, i) => {
-                    gsap.fromTo(card, 
-                        {
-                            opacity: 0,
-                            y: 60,
-                            scale: 0.95
-                        },
-                        {
-                            opacity: 1,
-                            y: 0,
-                            scale: 1,
-                            duration: 0.8,
-                            ease: "power2.out",
-                            scrollTrigger: {
-                                trigger: card,
-                                start: "top 85%",
-                                toggleActions: "play none none reverse",
-                                once: false
-                            },
-                            delay: (i % 4) * 0.1
-                        }
-                    );
-                });
+          <article class="exp-card reveal" data-category="infra">
+            <img src="./assets/cards/token-airdrop.svg" alt="Token airdrop utility screenshot" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Token Airdrop</h3>
+              <p>Distribute tokens faster with a guided workflow and safer transaction flow.</p>
+              <p class="meta">Infrastructure</p>
+              <a href="/airdrop" class="btn btn-ghost">Launch</a>
+            </div>
+          </article>
 
-                // About section animation
-                gsap.fromTo(".about-section", 
-                    {
-                        opacity: 0,
-                        x: -100
-                    },
-                    {
-                        opacity: 1,
-                        x: 0,
-                        duration: 1.2,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: ".about-section",
-                            start: "top 85%",
-                            toggleActions: "play none none none",
-                            once: false
-                        }
-                    }
-                );
+          <article class="exp-card reveal" data-category="game">
+            <img src="./assets/cards/game-hub.svg" alt="Game hub visual" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Game Hub</h3>
+              <p>A single hub for lightweight game prototypes and community-focused play loops.</p>
+              <p class="meta">Game</p>
+              <a href="/gamehub" class="btn btn-ghost">Play</a>
+            </div>
+          </article>
 
-                // Contact section animation
-                gsap.fromTo(".contact-section", 
-                    {
-                        opacity: 0,
-                        y: 80
-                    },
-                    {
-                        opacity: 1,
-                        y: 0,
-                        duration: 1.2,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: ".contact-section",
-                            start: "top 85%",
-                            toggleActions: "play none none none",
-                            once: false
-                        }
-                    }
-                );
+          <article class="exp-card reveal" data-category="creative">
+            <img src="./assets/cards/pixel-draw.svg" alt="Pixel Draw creative tool" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Pixel Draw</h3>
+              <p>Simple pixel canvas for creators who want fast, expressive visual exploration.</p>
+              <p class="meta">Creative</p>
+              <a href="/pixeldraw" class="btn btn-ghost">Create</a>
+            </div>
+          </article>
 
-                // Support section animation
-                gsap.fromTo(".support-section", 
-                    {
-                        opacity: 0,
-                        scale: 0.95
-                    },
-                    {
-                        opacity: 1,
-                        scale: 1,
-                        duration: 1,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: ".support-section",
-                            start: "top 85%",
-                            toggleActions: "play none none none",
-                            once: false
-                        }
-                    }
-                );
+          <article class="exp-card reveal" data-category="tool">
+            <img src="./assets/cards/metadata-update.svg" alt="Metadata bulk update interface" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Update Metadata</h3>
+              <p>Bulk metadata editing utility to reduce repetitive post-mint management tasks.</p>
+              <p class="meta">Tool</p>
+              <a href="/updatemetadata" class="btn btn-ghost">Update</a>
+            </div>
+          </article>
 
-                // Footer animation
-                gsap.fromTo(".footer", 
-                    {
-                        opacity: 0,
-                        y: 50
-                    },
-                    {
-                        opacity: 1,
-                        y: 0,
-                        duration: 1,
-                        ease: "power2.out",
-                        scrollTrigger: {
-                            trigger: ".footer",
-                            start: "top 95%",
-                            toggleActions: "play none none none",
-                            once: false
-                        }
-                    }
-                );
+          <article class="exp-card reveal" data-category="creative">
+            <img src="./assets/cards/mpc.svg" alt="MPC rhythm and music production tool" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>MPC</h3>
+              <p>Rhythm utility with BPM and timing helpers for music-first creative sessions.</p>
+              <p class="meta">Creative</p>
+              <a href="/mpc" class="btn btn-ghost">Launch</a>
+            </div>
+          </article>
 
-                // Nomads section animation
-                const nomadsSection = document.querySelector('.section:has(img[alt="Nomads Logo"])');
-                if (nomadsSection) {
-                    gsap.fromTo(nomadsSection, 
-                        {
-                            opacity: 0,
-                            y: 80
-                        },
-                        {
-                            opacity: 1,
-                            y: 0,
-                            duration: 1.2,
-                            ease: "power3.out",
-                            scrollTrigger: {
-                                trigger: nomadsSection,
-                                start: "top 85%",
-                                toggleActions: "play none none none",
-                                once: false
-                            }
-                        }
-                    );
-                }
+          <article class="exp-card reveal" data-category="infra">
+            <img src="./assets/cards/gaia-ecosystem.svg" alt="Gaia Ecosystem branding" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>Gaia Ecosystem</h3>
+              <p>NFT, staking, and smart contract ecosystem support for creator communities.</p>
+              <p class="meta">Infrastructure</p>
+              <a href="https://www.gaiaecosystem.com/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Visit</a>
+            </div>
+          </article>
 
-                // Modal animation
-                if (isModalOpen) {
-                    gsap.from(".modal-content", {
-                        opacity: 0,
-                        scale: 0.7,
-                        duration: 0.5,
-                        ease: "back.out(1.7)"
-                    });
-                }
+          <article class="exp-card reveal" data-category="tool">
+            <img src="./assets/cards/cdc-swiggle-scan.svg" alt="CDC Swiggle Scan NFT utility interface" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>CDC Swiggle Scan</h3>
+              <p>Fast NFT scanning with username context and collection export to help users analyze and share holdings.</p>
+              <p class="meta">Tool</p>
+              <a href="/cdcswigglescan" class="btn btn-ghost">Open</a>
+            </div>
+          </article>
 
-                // Cleanup function
-                return () => {
-                    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-                };
-            }, [isModalOpen]);
+          <article class="exp-card reveal" data-category="creative">
+            <img src="./assets/cards/pitbits.svg" alt="PitBits collection artwork" loading="lazy" decoding="async" width="640" height="400" />
+            <div class="exp-body">
+              <h3>PitBits</h3>
+              <p>A trait-driven pixel collection with community and collector-focused identity.</p>
+              <p class="meta">Creative</p>
+              <a href="https://allstake.io/launches/pitbits" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">View</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
-            return (
-                <div>
-                    {/* Navigation Bar */}
-                    <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
-                        <div className="navbar-container">
-                            <a href="#" className="navbar-logo">
-                                <img src="./assets/NSlogo.png" alt="Logo" className="navbar-logo-img" />
-                                <span className="navbar-brand">NifftySwiggle</span>
-                            </a>
-                            <ul className="navbar-menu">
-                                <li><a href="#" className="navbar-link">Home</a></li>
-                                <li 
-                                    className={`dropdown ${isDesktopDropdownOpen ? 'active' : ''}`}
-                                    onMouseEnter={() => setIsDesktopDropdownOpen(true)}
-                                    onMouseLeave={() => setIsDesktopDropdownOpen(false)}
-                                    onClick={() => setIsDesktopDropdownOpen(!isDesktopDropdownOpen)}
-                                >
-                                    <a href="#projects" className="navbar-link" onClick={(e) => e.preventDefault()}>
-                                        Projects <span className="dropdown-arrow">▾</span>
-                                    </a>
-                                    <div className="dropdown-content">
-                                        <a href="/tempohub" className="dropdown-link">Tempo Hub</a>
-                                        <a href="https://strategicplay.xyz" className="dropdown-link" target="_blank" rel="noopener noreferrer">Strategic Play</a>
-                                        <a href="https://nomadshq.xyz" className="dropdown-link" target="_blank" rel="noopener noreferrer">Nomads</a>
-                                        <a href="https://allstake.io/launches/pitbits" className="dropdown-link" target="_blank" rel="noopener noreferrer">PitBits</a>
-                                        <a href="https://www.gaiaecosystem.com/" className="dropdown-link" target="_blank" rel="noopener noreferrer">Gaia Ecosystem</a>
-                                        <a href="/cdcswigglescan" className="dropdown-link">CDC Swiggle Scan</a>
-                                        <a href="/swigglescan" className="dropdown-link">Swiggle Scan</a>
-                                        <a href="/nftgenerator" className="dropdown-link">NFT Generator</a>
-                                        <a href="https://www.gaiaecosystem.com/stake.html" className="dropdown-link" target="_blank" rel="noopener noreferrer">Non-Custodial Stake</a>
-                                        <a href="/chess" className="dropdown-link">Online Chess</a>
-                                        <a href="/airdrop" className="dropdown-link">Token Airdrop</a>
-                                        <a href="/gamehub" className="dropdown-link">Game Hub</a>
-                                        <a href="/pixeldraw" className="dropdown-link">Pixel Draw</a>
-                                        <a href="/updatemetadata" className="dropdown-link">Update Metadata</a>
-                                        <a href="/mpc" className="dropdown-link">MPC</a>
-                                    </div>
-                                </li>
-                                <li><a href="#about" className="navbar-link">About</a></li>
-                                <li><a href="#contact" className="navbar-link">Contact</a></li>
-                                <li><a href="https://discord.gg/CaSgfqdYCW" className="navbar-cta" target="_blank" rel="noopener noreferrer">Join Discord</a></li>
-                            </ul>
-                            <button 
-                                className="mobile-menu-button" 
-                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                onTouchEnd={(e) => {
-                                    e.preventDefault();
-                                    setIsMobileMenuOpen(!isMobileMenuOpen);
-                                }}
-                                aria-label="Toggle menu"
-                                type="button"
-                            >
-                                {isMobileMenuOpen ? '✕' : '☰'}
-                            </button>
-                        </div>
-                    </nav>
+    <section class="section" aria-labelledby="process-title">
+      <div class="container">
+        <p class="eyebrow">Process</p>
+        <h2 class="section-title" id="process-title">How projects move from idea to launch.</h2>
+        <p class="section-subtitle">
+          A focused product flow built to reduce risk, keep momentum, and produce clear launch outcomes.
+        </p>
 
-                    {/* Mobile Menu */}
-                    <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
-                        <ul className="mobile-menu-list">
-                            <li><a href="#" className="mobile-menu-link" onClick={handleLinkClick}>Home</a></li>
-                            <li>
-                                <a 
-                                    href="#projects" 
-                                    className="mobile-menu-link" 
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setIsMobileProjectsOpen(!isMobileProjectsOpen);
-                                    }}
-                                    onTouchEnd={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        setIsMobileProjectsOpen(!isMobileProjectsOpen);
-                                    }}
-                                    style={{cursor: 'pointer'}}
-                                >
-                                    Projects {isMobileProjectsOpen ? '▴' : '▾'}
-                                </a>
-                                <div className={`mobile-dropdown ${isMobileProjectsOpen ? 'active' : ''}`}>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/tempohub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Tempo Hub</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="https://strategicplay.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Strategic Play</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="https://nomadshq.xyz" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Nomads</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="https://allstake.io/launches/pitbits" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>PitBits</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="https://www.gaiaecosystem.com/" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Gaia Ecosystem</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/cdcswigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>CDC Swiggle Scan</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/swigglescan" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Swiggle Scan</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/nftgenerator" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>NFT Generator</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="https://www.gaiaecosystem.com/stake.html" className="mobile-menu-link" onClick={handleLinkClick} target="_blank" rel="noopener noreferrer" style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Non-Custodial Stake</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/chess" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Online Chess</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/airdrop" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Token Airdrop</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/gamehub" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Game Hub</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/pixeldraw" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Pixel Draw</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/updatemetadata" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>Update Metadata</a>
-                                    </div>
-                                    <div className="mobile-dropdown-item">
-                                        <a href="/mpc" className="mobile-menu-link" onClick={handleLinkClick} style={{fontSize: '1rem', padding: '0.75rem', cursor: 'pointer'}}>MPC</a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li><a href="#about" className="mobile-menu-link" onClick={handleLinkClick}>About</a></li>
-                            <li><a href="#contact" className="mobile-menu-link" onClick={handleLinkClick}>Contact</a></li>
-                            <li><a href="https://discord.gg/CaSgfqdYCW" className="navbar-cta" target="_blank" rel="noopener noreferrer" onClick={handleLinkClick}>Join Discord</a></li>
-                        </ul>
-                    </div>
+        <div class="process-grid impact-group impact-process">
+          <article class="step reveal impact-left">
+            <span class="index">01</span>
+            <h3>Align</h3>
+            <p>Define audience, core action, and measurable success metrics.</p>
+          </article>
+          <article class="step reveal impact-right">
+            <span class="index">02</span>
+            <h3>Design</h3>
+            <p>Create UX architecture and visual direction with accessibility built in.</p>
+          </article>
+          <article class="step reveal">
+            <span class="index">03</span>
+            <h3>Build</h3>
+            <p>Implement performance-first front-end systems and clean interaction flows.</p>
+          </article>
+          <article class="step reveal">
+            <span class="index">04</span>
+            <h3>Launch</h3>
+            <p>Ship, monitor, and iterate based on analytics and user behavior.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-                    {/* Hero Section */}
-                    <section className="hero">
-                        <div className="hero-bg"></div>
-                        <div className="hero-content text-center z-10">
-                            <img
-                                src="./assets/NSlogo.png"
-                                alt="NifftySwiggle Studio Logo"
-                                className="hero-logo mx-auto"
-                            />
-                            <h1 className="text-4xl sm:text-6xl font-bold text-white mb-4 font-orbitron hero-title">
-                                NifftySwiggle Studio
-                            </h1>
-                            <p className="text-lg sm:text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
-                                Building the future of Web3 and gaming with innovative tools and immersive experiences.
-                            </p>
-                            <div className="flex justify-center space-x-4">
-                                <a href="#projects" className="cta-button">
-                                    Discover Projects
-                                </a>
-                                <a href="#contact" className="cta-button bg-gray-700 hover:bg-gray-600">
-                                    Connect with me
-                                </a>
-                            </div>
-                        </div>
-                    </section>
+    <section class="section" id="about" aria-labelledby="about-title">
+      <div class="container">
+        <p class="eyebrow">Studio Story</p>
+        <h2 class="section-title" id="about-title">Small studio. Big shipping energy.</h2>
 
-                    {/* Nomads Mint Section */}
-                    <section className="section">
-                        <div className="max-w-4xl mx-auto text-center" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                             <img 
-                                src="./assets/nomads.png" 
-                                alt="Nomads Logo" 
-                                className="w-40 h-60 mx-auto mb-6"
-                                style={{filter: 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.7))'}}
-                            />
-                            <h2 className="text-3xl sm:text-4xl font-bold text-white font-orbitron mb-4 shimmer-text">
-                                Nomads is live for mint
-                            </h2>
-                            <p className="text-lg text-gray-300 mb-6">
-                                Discover more about Nomads and join the community!
-                            </p>
-                            <a
-                                href="https://nomadshq.xyz"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="cta-button inline-block mb-6"
-                            >
-                                Visit Nomads HQ
-                            </a>
-                            <div className="project-card p-6" style={{maxWidth: '600px', width: '100%', margin: '0 auto'}}>
-                                <iframe 
-                                    id='iframe-widget' 
-                                    src='https://0xbd11e8799e1d48fe607b6a471c66de84522e49c1_143.nfts2.me/?widget=classic' 
-                                    style={{height: '414px', width: '100%', maxWidth: '100%', border: 'none'}}
-                                />
-                            </div>
-                        </div>
-                    </section>
+        <div class="proof-grid impact-group impact-story">
+          <article class="story reveal impact-left">
+            <p>
+              NifftySwiggle Studio makes Web3 products feel human by reducing complexity and amplifying creative identity.
+            </p>
+            <p>
+              Each project blends narrative clarity, practical utility, and fast iteration to deliver premium experiences that support real user goals.
+            </p>
+            <p>
+              From first concept to launch, the process is intentionally collaborative—aligning product strategy, interface polish, and ecosystem context so every feature feels purposeful.
+            </p>
+            <p>
+              The focus stays on outcomes: clearer onboarding, stronger retention loops, and memorable brand moments that help communities trust, use, and share the product.
+            </p>
+          </article>
 
-                    {/* Projects Section */}
-                    <section id="projects" className="section">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-center text-white font-orbitron mb-8">
-                            Creations
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto" style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
-                             {/* Tempo Hub */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/TempoHub.png"
-                                    alt="Tempo Hub"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Tempo Hub</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Comprehensive hub for Tempo Network featuring developer tools and more.
-                                </p>
-                                <a
-                                    href="/tempohub"
-                                    className="cta-button inline-block"
-                                >
-                                    Launch
-                                </a>
-                            </div>
-                             {/* Strategic Play */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/StrategicPlay.png"
-                                    alt="Strategic Play"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Strategic Play</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Web 3 gaming project with strategic gameplay and community engagement.
-                                </p>
-                                <a
-                                    href="https://strategicplay.xyz"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Browse
-                                </a>
-                            </div>
-                            {/* PitBits */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/PitBits.png"
-                                    alt="PitBits"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">PitBits</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Pixel art NFT collection with unique traits and community-driven features.
-                                </p>
-                                <a
-                                    href="https://allstake.io/launches/pitbits"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Buy Now
-                                </a>
-                            </div>
-                              {/* Gaia */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/GaiaLogo.png"
-                                    alt="Gaia"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Gaia Ecosystem</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Gaia Ecosystem powers creators with NFTs, staking, and smart contracts.
-                                </p>
-                                <a
-                                    href="https://www.gaiaecosystem.com/"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Visit
-                                </a>
-                            </div>
-                            {/* CDC Swiggle Scan */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/cdcswigglescan.png"
-                                    alt="cdc swigglesscan"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">CDC Swiggle Scan</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Scan Crypto.com NFTs with usernames. Gather, Download and share your collections.
-                                </p>
-                                <a
-                                    href="/cdcswigglescan"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Scan
-                                </a>
-                            </div>
-                            {/* Swiggle Scan */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/swigglescan.png"
-                                    alt="SwiggleScan"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Swiggle Scan</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Remake of the classic Cronos Scan tool, scan tokens and NFT addresses.
-                                </p>
-                                <a
-                                    href="/swigglescan"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Scan
-                                </a>
-                            </div>
-                            {/* Web3 Tool: NifftySwiggles NFT Generator */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/NFTgenerator.png"
-                                    alt="NifftySwiggles NFT Generator"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">NFT Generator</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Create unique NFT collections with customizable layers with no code.
-                                </p>
-                                <a
-                                    href="/nftgenerator"
-                                    className="cta-button inline-block"
-                                >
-                                    Try Now
-                                </a>
-                            </div>
-                            {/* Non-Custodial Stake */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/NonCustodialStake.png"
-                                    alt="Gaia Ecosystem Non-Custodial Stake"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Non-Custodial Stake</h3>
-                                <p className="text-gray-400 mb-4">
-                                   Create and manage non-custodial NFT staking pools with customizable rewards and durations.
-                                </p>
-                                <a
-                                    href="https://www.gaiaecosystem.com/stake.html"
-                                    className="cta-button inline-block"
-                                >
-                                    Stake Now
-                                </a>
-                            </div>
-                            {/* Game: Chess Game */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/Chess.png"
-                                    alt="Blockchain Chess Game"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Online Chess</h3>
-                                <p className="text-gray-400 mb-4">
-                                    A decentralized chess game with tokenized rewards and seamless multiplayer battles.
-                                </p>
-                                <a
-                                    href="/chess"
-                                    className="cta-button inline-block"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Play Now
-                                </a>
-                            </div>
-                            {/* Web3 Tool: Airdrop Tool */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/Airdrop.png"
-                                    alt="Airdrop and Staking Tool"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Token Airdrop</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Streamline token airdrops and staking with a secure, user-friendly Web3 platform.
-                                </p>
-                                <a
-                                    href="/airdrop"
-                                    className="cta-button inline-block"
-                                >
-                                    Airdrop
-                                </a>
-                            </div>
-                            {/* Game Hub */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/GameHub.png"
-                                    alt="Game Hub"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Game Hub</h3>
-                                <p className="text-gray-400 mb-4">
-                                    A new arcade gaming hub with exciting features and community-driven content.
-                                </p>
-                                <a
-                                    href="/gamehub"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Play Now
-                                </a>
-                            </div>
-                            {/* Pixel Draw */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/PixelDraw.png"
-                                    alt="PixelDraw"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Pixel Draw</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Draw Pixel Art with a simple, intuitive interface and share your creations.
-                                </p>
-                                <a
-                                    href="/pixeldraw"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Draw 
-                                </a>
-                            </div>
-                           
-                            {/* Update Metadata */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/MetadataUpdate.png"
-                                    alt="MetaData"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Update Metadata</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Edit and Change bulk MetaData
-                                </p>
-                                <a
-                                    href="/updatemetadata"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Update
-                                </a>
-                            </div>
-                            {/* Mpc */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/MPC.png"
-                                    alt="MPC"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">MPC</h3>
-                                <p className="text-gray-400 mb-4">
-                                    Music production hub with BPM calculator, metronome, and rhythm tools
-                                </p>
-                                <a
-                                    href="/mpc"
-                                    className="cta-button inline-block"
-                                >
-                                    Launch
-                                </a>
-                            </div>
-                            {/* Soon */}
-                            <div className="project-card p-6">
-                                <img
-                                    src="./assets/Soon.png"
-                                    alt="Soon"
-                                    className="project-image mb-4"
-                                />
-                                <h3 className="text-xl font-semibold text-white mb-2">Coming Soon</h3>
-                                <p className="text-gray-400 mb-4">
-                                    More Tools and Games are on the way! Stay tuned for exciting updates.
-                                </p>
-                                <a
-                                    href="#contact"
-                                    className="cta-button inline-block bg-gray-700 hover:bg-gray-600"
-                                >
-                                    Soon
-                                </a>
-                            </div>
-                        </div>
-                    </section>
+          <aside class="proof-panel reveal impact-right" aria-label="Credibility points">
+            <p>
+              The studio portfolio spans utility platforms, NFT tools, and game experiments, each designed with intentional UX and product-led storytelling.
+            </p>
+            <ul class="stats">
+              <li><strong class="countup" data-target="15" data-suffix="+">15+</strong><span>active and archived builds</span></li>
+              <li><strong>1 Studio</strong><span>unified creative direction</span></li>
+              <li><strong>Fast</strong><span>iteration-focused delivery</span></li>
+              <li><strong>Global</strong><span>community-based audience</span></li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
 
-                    {/* About Section */}
-                    <section id="about" className="section about-section">
-                        <div className="max-w-4xl mx-auto text-center">
-                            <h2 className="text-3xl sm:text-4xl font-bold text-white font-orbitron mb-6">
-                                About NifftySwiggle Studio
-                            </h2>
-                            <p className="text-lg text-gray-300">
-                                NifftySwiggle Studio is at the forefront of Web3 and gaming innovation. From powerful tools like my NFT Generator and Airdrop/Staking platform to immersive experiences like Blockchain Chess, to empower creators and players with cutting-edge technology and stunning design.
-                            </p>
-                        </div>
-                    </section>
+    <section class="section contact" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="contact-wrap reveal impact-group impact-contact" data-impact-mode="items">
+          <div data-impact-item>
+            <p class="eyebrow">Contact</p>
+            <h2 id="contact-title">Have an idea worth shipping?</h2>
+            <p>
+              Let’s turn your concept into a polished product experience. Reach out with your brief and we’ll map next steps.
+            </p>
+          </div>
+          <div data-impact-item>
+            <div class="hero-actions">
+              <a href="https://discord.gg/CaSgfqdYCW" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Join Discord</a>
+              <a href="https://x.com/pet_rescueNFT" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Message on X</a>
+            </div>
+            <div class="contact-links" aria-label="Social links">
+              <a href="https://github.com/nifftyswiggle" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://x.com/pet_rescueNFT" target="_blank" rel="noopener noreferrer">X</a>
+              <a href="https://nomadshq.xyz" target="_blank" rel="noopener noreferrer">Nomads</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-                    {/* Contact Section */}
-                    <section id="contact" className="section contact-section">
-                        <div className="max-w-4xl mx-auto text-center">
-                            <h2 className="text-3xl sm:text-4xl font-bold text-white font-orbitron mb-6">
-                                Let's Collaborate
-                            </h2>
-                            <p className="text-lg text-gray-300 mb-6">
-                                Got an idea for a Web3 tool or game? Reach out, and let's build something revolutionary together.
-                            </p>
-                            <a
-                                href="https://discord.gg/CaSgfqdYCW"
-                                className="cta-button inline-block mb-6"
-                            >
-                                Contact Me
-                            </a>
-                            <div className="support-section">
-                                <h3 className="text-xl font-semibold text-white font-orbitron mb-4">
-                                    Support Our Mission
-                                </h3>
-                                <p className="text-lg text-gray-300 mb-6">
-                                    Help me fuel innovation in Web3 and gaming by supporting our projects.
-                                </p>
-                                <button
-                                    onClick={() => setIsModalOpen(true)}
-                                    className="secondary-cta inline-block"
-                                >
-                                    Donate
-                                </button>
-                            </div>
-                        </div>
-                    </section>
+  <footer class="site-footer" aria-label="Site footer">
+    <div class="container footer-wrap">
+      <p>© <span id="year"></span> NifftySwiggle Studio. All rights reserved.</p>
+    </div>
+  </footer>
 
-                    {/* Footer */}
-                    <footer className="footer">
-                        <p className="text-sm text-gray-400">
-                            &copy; 2025 NifftySwiggle Studio. All rights reserved.
-                        </p>
-                        <p className="text-sm text-gray-400 mt-2">
-                            Follow me on{' '}
-                            <a href="https://x.com/pet_rescueNFT" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-                                X
-                            </a>{' '}
-                            |{' '}
-                            <a href="https://github.com/nifftyswiggle" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-                                GitHub
-                            </a>{' '}
-                            |{' '}
-                            <a href="https://discord.gg/CaSgfqdYCW" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-                                Discord
-                            </a>
-                        </p>
-                    </footer>
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
 
-                    {/* Donation Modal */}
-                    {isModalOpen && (
-                        <div className="modal">
-                            <div className="modal-content">
-                                <h2>Support NifftySwiggle Studio</h2>
-                                <p>
-                                    Your donations fuel my mission to innovate in Web3 and gaming. By supporting NifftySwiggle, you help me develop tools like the NFT Generator and Airdrop/Staking platform, and create immersive experiences like Blockchain Chess and the upcoming Game Hub. Every contribution drives me closer to revolutionizing the Web3 ecosystem!
-                                </p>
-                                <div className="crypto-address">
-                                    {cryptoAddress}
-                                </div>
-                                <button
-                                    onClick={handleCopyAddress}
-                                    className="copy-button mb-4"
-                                >
-                                    {copyStatus}
-                                </button>
-                                <button
-                                    onClick={() => setIsModalOpen(false)}
-                                    className="close-button"
-                                >
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
+  <script>
+    (function () {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const saveData = !!(navigator.connection && navigator.connection.saveData);
+      const reduceMotion = prefersReducedMotion || saveData;
+      const cursorEligible = !reduceMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+      const menuToggle = document.getElementById('menu-toggle');
+      const nav = document.getElementById('main-nav');
 
-        // Render the App
-        if (window.React && window.ReactDOM) {
-            ReactDOM.render(<App />, document.getElementById('root'));
-        } else {
-            document.getElementById('root').innerHTML = `
-                <div class="p-6 m-4 bg-red-100 text-red-700 rounded-md max-w-4xl mx-auto">
-                    <h2 class="text-xl font-bold">Script Loading Error</h2>
-                    <p>Failed to load React or ReactDOM. Please check your network and try refreshing the page.</p>
-                </div>
-            `;
+      if (menuToggle && nav) {
+        function closeMenu() {
+          nav.classList.remove('open');
+          menuToggle.setAttribute('aria-expanded', 'false');
+          menuToggle.textContent = '☰';
+          menuToggle.setAttribute('aria-label', 'Open menu');
         }
-    </script>
+
+        menuToggle.addEventListener('click', function () {
+          const isOpen = nav.classList.toggle('open');
+          menuToggle.setAttribute('aria-expanded', String(isOpen));
+          menuToggle.textContent = isOpen ? '✕' : '☰';
+          menuToggle.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+        });
+
+        nav.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            if (window.innerWidth <= 760 && nav.classList.contains('open')) {
+              closeMenu();
+            }
+          });
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && nav.classList.contains('open')) {
+            closeMenu();
+            menuToggle.focus();
+          }
+        });
+
+        document.addEventListener('click', function (event) {
+          if (window.innerWidth <= 760 && nav.classList.contains('open')) {
+            const clickedInsideNav = nav.contains(event.target);
+            const clickedMenuToggle = menuToggle.contains(event.target);
+            if (!clickedInsideNav && !clickedMenuToggle) {
+              closeMenu();
+            }
+          }
+        });
+
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 760 && nav.classList.contains('open')) {
+            closeMenu();
+          }
+        });
+      }
+
+      const chips = Array.from(document.querySelectorAll('.chip'));
+      const projectsGrid = document.getElementById('projects-grid');
+      const projectCards = Array.from(document.querySelectorAll('#projects-grid .exp-card'));
+      const resultsOutput = document.getElementById('results-count');
+      let refreshImpactObservers = function () {};
+
+      function updateCount(total) {
+        if (resultsOutput) {
+          resultsOutput.textContent = total + (total === 1 ? ' project' : ' projects');
+        }
+      }
+
+      function prioritizeProjects(filter) {
+        if (!projectsGrid) return;
+
+        const matchingCards = [];
+        const otherCards = [];
+
+        projectCards.forEach(function (card) {
+          card.hidden = false;
+          const category = card.getAttribute('data-category');
+          if (filter !== 'all' && category === filter) {
+            matchingCards.push(card);
+          } else {
+            otherCards.push(card);
+          }
+        });
+
+        const orderedCards = filter === 'all' ? projectCards : matchingCards.concat(otherCards);
+        orderedCards.forEach(function (card) {
+          projectsGrid.appendChild(card);
+        });
+
+        updateCount(projectCards.length);
+        refreshImpactObservers();
+      }
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          chips.forEach(function (button) { button.setAttribute('aria-pressed', 'false'); });
+          chip.setAttribute('aria-pressed', 'true');
+          prioritizeProjects(chip.getAttribute('data-filter') || 'all');
+        });
+      });
+
+      prioritizeProjects('all');
+
+      const year = document.getElementById('year');
+      if (year) year.textContent = String(new Date().getFullYear());
+
+      function spawnTapRipple(x, y) {
+        const ripple = document.createElement('span');
+        ripple.className = 'tap-ripple';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        document.body.appendChild(ripple);
+        window.setTimeout(function () {
+          ripple.remove();
+        }, 760);
+      }
+
+      if (!reduceMotion) {
+        document.addEventListener('pointerdown', function (event) {
+          spawnTapRipple(event.clientX, event.clientY);
+        });
+      }
+
+      if (cursorEligible) {
+        const dot = document.getElementById('cursor-dot');
+
+        if (dot) {
+          document.body.classList.add('has-cursor-effects');
+
+          dot.style.left = (window.innerWidth / 2) + 'px';
+          dot.style.top = (window.innerHeight / 2) + 'px';
+
+          document.addEventListener('pointermove', function (event) {
+            dot.style.left = event.clientX + 'px';
+            dot.style.top = event.clientY + 'px';
+          }, { passive: true });
+
+          document.addEventListener('pointerdown', function () {
+            dot.classList.add('cursor-down');
+          });
+
+          document.addEventListener('pointerup', function () {
+            dot.classList.remove('cursor-down');
+          });
+
+          document.addEventListener('pointerover', function (event) {
+            const interactive = event.target.closest('a, button, .btn, .chip, [role="button"]');
+            if (interactive) {
+              dot.classList.add('cursor-hover');
+            } else {
+              dot.classList.remove('cursor-hover');
+            }
+          });
+        }
+      }
+
+      const countupElements = Array.from(document.querySelectorAll('.countup'));
+
+      function renderCountupFinal(el) {
+        const target = Number(el.getAttribute('data-target') || '0');
+        const suffix = el.getAttribute('data-suffix') || '';
+        el.textContent = String(target) + suffix;
+      }
+
+      function animateCountup(el) {
+        const target = Number(el.getAttribute('data-target') || '0');
+        const suffix = el.getAttribute('data-suffix') || '';
+        const duration = 1150;
+        const startTime = performance.now();
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = Math.round(target * eased);
+          el.textContent = String(value) + suffix;
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          }
+        }
+
+        requestAnimationFrame(step);
+      }
+
+      if (!reduceMotion) {
+        const revealTargets = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('show');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+        revealTargets.forEach(function (element) {
+          observer.observe(element);
+        });
+
+        const impactGroups = Array.from(document.querySelectorAll('.impact-group'));
+        const impactLastRunMap = new WeakMap();
+        const impactItemLastRunMap = new WeakMap();
+        let groupImpactObserver = null;
+        let singleItemImpactObserver = null;
+
+        function getImpactItems(group) {
+          return Array.from(group.children).filter(function (child) {
+            return child.matches('.hero-collision-left, .hero-collision-right, .card, .capability, .exp-card, .step, .story, .proof-panel, [data-impact-item]');
+          });
+        }
+
+        function getColumnCount(group) {
+          const columns = window.getComputedStyle(group).gridTemplateColumns;
+          if (!columns || columns === 'none') return 1;
+
+          const tracks = [];
+          let depth = 0;
+          let current = '';
+
+          for (let index = 0; index < columns.length; index += 1) {
+            const character = columns[index];
+
+            if (character === '(') {
+              depth += 1;
+              current += character;
+              continue;
+            }
+
+            if (character === ')') {
+              depth = Math.max(0, depth - 1);
+              current += character;
+              continue;
+            }
+
+            if (character === ' ' && depth === 0) {
+              if (current.trim()) {
+                tracks.push(current.trim());
+                current = '';
+              }
+              continue;
+            }
+
+            current += character;
+          }
+
+          if (current.trim()) {
+            tracks.push(current.trim());
+          }
+
+          return tracks.length || 1;
+        }
+
+        function clearImpactDirectionClasses(item) {
+          item.classList.remove('impact-enter-left', 'impact-enter-right', 'impact-enter-center', 'impact-item-active', 'impact-item');
+        }
+
+        function assignImpactPattern(group, columns) {
+          const visibleItems = getImpactItems(group).filter(function (item) { return !item.hidden; });
+          visibleItems.forEach(clearImpactDirectionClasses);
+          visibleItems.forEach(function (item) { item.classList.add('impact-item'); });
+
+          if (!visibleItems.length) return visibleItems;
+
+          const normalizedCols = Math.max(1, columns);
+          const rows = [];
+
+          visibleItems.forEach(function (item) {
+            const itemTop = Math.round(item.getBoundingClientRect().top);
+            const currentRow = rows[rows.length - 1];
+            const rowTop = currentRow ? currentRow.top : null;
+            const isSameRow = currentRow && Math.abs(itemTop - rowTop) <= 6;
+
+            if (isSameRow) {
+              currentRow.items.push(item);
+            } else {
+              rows.push({ top: itemTop, items: [item] });
+            }
+          });
+
+          rows.forEach(function (rowMeta, rowIndex) {
+            const row = rowMeta.items;
+
+            if (normalizedCols === 1 || row.length === 1) {
+              row[0].classList.add(rowIndex % 2 === 0 ? 'impact-enter-left' : 'impact-enter-right');
+              return;
+            }
+
+            if (row.length === 2) {
+              row[0].classList.add('impact-enter-left');
+              row[1].classList.add('impact-enter-right');
+              return;
+            }
+
+            if (row.length === 3) {
+              row[0].classList.add('impact-enter-left');
+              row[1].classList.add('impact-enter-center');
+              row[2].classList.add('impact-enter-right');
+              return;
+            }
+
+            const midpoint = Math.floor(row.length / 2);
+            row.forEach(function (item, index) {
+              if (index < midpoint) {
+                item.classList.add('impact-enter-left');
+              } else if (index > midpoint || row.length % 2 === 0) {
+                item.classList.add('impact-enter-right');
+              } else {
+                item.classList.add('impact-enter-center');
+              }
+            });
+          });
+
+          return visibleItems;
+        }
+
+        function playGroupImpact(group) {
+          const now = Date.now();
+          const lastRun = impactLastRunMap.get(group) || 0;
+          if (now - lastRun < 900) return;
+          impactLastRunMap.set(group, now);
+          group.classList.remove('impact-active');
+          void group.offsetWidth;
+          group.classList.add('impact-active');
+        }
+
+        function playItemImpact(item) {
+          const now = Date.now();
+          const lastRun = impactItemLastRunMap.get(item) || 0;
+          if (now - lastRun < 700) return;
+          impactItemLastRunMap.set(item, now);
+          item.classList.remove('impact-item-active');
+          void item.offsetWidth;
+          item.classList.add('impact-item-active');
+        }
+
+        function setupImpactObservers() {
+          if (groupImpactObserver) groupImpactObserver.disconnect();
+          if (singleItemImpactObserver) singleItemImpactObserver.disconnect();
+
+          const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+          const groupThreshold = viewportWidth <= 760 ? 0.22 : 0.32;
+          const itemThreshold = viewportWidth <= 760 ? 0.26 : 0.42;
+
+          groupImpactObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                playGroupImpact(entry.target);
+              } else {
+                entry.target.classList.remove('impact-active');
+              }
+            });
+          }, { threshold: groupThreshold, rootMargin: '0px 0px -8% 0px' });
+
+          singleItemImpactObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                playItemImpact(entry.target);
+              } else {
+                entry.target.classList.remove('impact-item-active');
+              }
+            });
+          }, { threshold: itemThreshold, rootMargin: '0px 0px -10% 0px' });
+
+          impactGroups.forEach(function (group) {
+            const columns = getColumnCount(group);
+            const items = assignImpactPattern(group, columns);
+            const forceItemMode = group.getAttribute('data-impact-mode') === 'items';
+
+            if (columns === 1 || forceItemMode) {
+              items.forEach(function (item) {
+                singleItemImpactObserver.observe(item);
+              });
+            } else {
+              groupImpactObserver.observe(group);
+            }
+          });
+
+          function getVisibleRatio(element) {
+            const rect = element.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+            if (!viewportHeight || rect.height <= 0) return 0;
+
+            const visibleTop = Math.max(rect.top, 0);
+            const visibleBottom = Math.min(rect.bottom, viewportHeight);
+            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+            return visibleHeight / rect.height;
+          }
+
+          impactGroups.forEach(function (group) {
+            const visibleRatio = getVisibleRatio(group);
+            const inView = visibleRatio >= 0.2;
+            if (!inView) return;
+
+            const columns = getColumnCount(group);
+            const forceItemMode = group.getAttribute('data-impact-mode') === 'items';
+            if (columns === 1 || forceItemMode) {
+              getImpactItems(group).forEach(function (item) {
+                if (item.hidden) return;
+                if (getVisibleRatio(item) >= 0.35) {
+                  playItemImpact(item);
+                }
+              });
+            } else {
+              playGroupImpact(group);
+            }
+          });
+        }
+
+        setupImpactObservers();
+        refreshImpactObservers = setupImpactObservers;
+
+        let impactResizeFrame = 0;
+        function scheduleImpactRefresh() {
+          if (impactResizeFrame) {
+            cancelAnimationFrame(impactResizeFrame);
+          }
+
+          impactResizeFrame = requestAnimationFrame(function () {
+            impactResizeFrame = 0;
+            setupImpactObservers();
+          });
+        }
+
+        window.addEventListener('resize', scheduleImpactRefresh, { passive: true });
+        window.addEventListener('orientationchange', scheduleImpactRefresh, { passive: true });
+
+        const countupObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              animateCountup(entry.target);
+              countupObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.6 });
+
+        countupElements.forEach(function (el) {
+          countupObserver.observe(el);
+        });
+
+        const hero = document.querySelector('.hero');
+        if (hero) {
+          hero.addEventListener('pointermove', function (event) {
+            const rect = hero.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / rect.width) * 100;
+            const y = ((event.clientY - rect.top) / rect.height) * 100;
+            hero.style.setProperty('--mx', x + '%');
+            hero.style.setProperty('--my', y + '%');
+          });
+        }
+      } else {
+        document.querySelectorAll('.reveal').forEach(function (item) {
+          item.classList.add('show');
+        });
+
+        countupElements.forEach(function (el) {
+          renderCountupFinal(el);
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
