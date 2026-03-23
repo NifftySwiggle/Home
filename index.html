@@ -233,6 +233,74 @@
       color: #ffffff;
     }
 
+    /* Tools dropdown */
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .nav-dropdown > a,
+    .nav-dropdown > .nav-dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .nav-dropdown-trigger {
+      background: transparent;
+      border: 0;
+      color: #dbe2f5;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 0.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .nav-dropdown-trigger:hover {
+      color: #ffffff;
+    }
+
+    .main-nav .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 0.6rem);
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 210px;
+      max-width: min(92vw, 320px);
+      max-height: min(68vh, 520px);
+      overflow-y: auto;
+      background: rgba(10, 13, 22, 0.97);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0.45rem;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55);
+      z-index: 1300;
+      list-style: none;
+      flex-direction: column;
+      gap: 0.15rem;
+      align-items: stretch;
+    }
+
+    .main-nav .nav-dropdown.open .nav-dropdown-menu {
+      display: flex;
+    }
+
+    .nav-dropdown-menu a {
+      display: block;
+      padding: 0.48rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #cdd5ef;
+      white-space: nowrap;
+    }
+
+    .nav-dropdown-menu a:hover {
+      background: rgba(124, 140, 255, 0.13);
+      color: #ffffff;
+    }
+
     .btn,
     button.btn {
       display: inline-flex;
@@ -1023,6 +1091,8 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         display: none;
         padding: var(--space-4) var(--space-3) var(--space-5);
+        max-height: calc(100dvh - 64px);
+        overflow-y: auto;
       }
 
       .main-nav.open {
@@ -1034,6 +1104,26 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 0.6rem;
+      }
+
+      .main-nav .nav-dropdown-menu {
+        position: static;
+        transform: none;
+        display: none;
+        max-width: 100%;
+        max-height: none;
+        overflow-y: visible;
+        box-shadow: none;
+        border: none;
+        border-left: 1px solid rgba(255,255,255,0.1);
+        border-radius: 0;
+        background: transparent;
+        padding: 0.25rem 0 0.25rem 1rem;
+        margin-top: 0.25rem;
+      }
+
+      .main-nav .nav-dropdown.open .nav-dropdown-menu {
+        display: flex;
       }
 
       .main-nav .btn {
@@ -1224,8 +1314,28 @@
           <li><a href="#capabilities">Capabilities</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#contact">Contact</a></li>
+          <li class="nav-dropdown">
+            <button type="button" class="nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">Projects ▾</button>
+            <ul class="nav-dropdown-menu">
+              <li><a href="/tempohub">Tempo Hub</a></li>
+              <li><a href="https://strategicplay.xyz" target="_blank" rel="noopener noreferrer">Strategic Play</a></li>
+              <li><a href="https://nomadshq.xyz" target="_blank" rel="noopener noreferrer">Nomads</a></li>
+              <li><a href="/swigglescan">Swiggle Scan</a></li>
+              <li><a href="/nftgenerator">NFT Generator</a></li>
+              <li><a href="https://www.gaiaecosystem.com/stake.html" target="_blank" rel="noopener noreferrer">Non-Custodial Stake</a></li>
+              <li><a href="/chess">Online Chess</a></li>
+              <li><a href="/airdrop">Token Airdrop</a></li>
+              <li><a href="/gamehub">Game Hub</a></li>
+              <li><a href="/pixeldraw">Pixel Draw</a></li>
+              <li><a href="/updatemetadata">Update Metadata</a></li>
+              <li><a href="/mpc">MPC</a></li>
+              <li><a href="https://www.gaiaecosystem.com/" target="_blank" rel="noopener noreferrer">Gaia Ecosystem</a></li>
+              <li><a href="/cdcswigglescan">CDC Swiggle Scan</a></li>
+              <li><a href="https://allstake.io/launches/pitbits" target="_blank" rel="noopener noreferrer">PitBits</a></li>
+            </ul>
+          </li>
         </ul>
-        <a href="https://discord.gg/CaSgfqdYCW" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Start a Project</a>
+        <a href="https://discord.gg/CaSgfqdYCW" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Join Discord</a>
       </nav>
     </div>
   </header>
@@ -1608,6 +1718,11 @@
           menuToggle.setAttribute('aria-expanded', 'false');
           menuToggle.textContent = '☰';
           menuToggle.setAttribute('aria-label', 'Open menu');
+          document.querySelectorAll('.nav-dropdown.open').forEach(function (dropdown) {
+            dropdown.classList.remove('open');
+            const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+          });
         }
 
         menuToggle.addEventListener('click', function () {
@@ -1648,6 +1763,36 @@
           }
         });
       }
+
+      // Tools dropdown — click to open/close
+      document.querySelectorAll('.nav-dropdown').forEach(function (dropdown) {
+        const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+        if (!trigger) return;
+        trigger.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const isOpen = dropdown.classList.toggle('open');
+          trigger.setAttribute('aria-expanded', String(isOpen));
+        });
+      });
+      document.addEventListener('click', function (e) {
+        document.querySelectorAll('.nav-dropdown.open').forEach(function (dropdown) {
+          if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+            const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.nav-dropdown.open').forEach(function (dropdown) {
+            dropdown.classList.remove('open');
+            const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+            if (trigger) { trigger.setAttribute('aria-expanded', 'false'); trigger.focus(); }
+          });
+        }
+      });
 
       document.querySelectorAll('a[href]').forEach(function (link) {
         const href = (link.getAttribute('href') || '').trim();
